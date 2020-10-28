@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -22,14 +23,14 @@ namespace Butik
         public decimal Price;
         public string Description;
         public string ImageName;
-        
+
     }
     public partial class MainWindow : Window
     {
         private List<Item> itemList = new List<Item>();
         readonly string path = @"C:\Windows\Temp\store.csv";
         private ListBox cartBody = new ListBox { Margin = new Thickness(5) };
-        private decimal sum = 0;
+        private decimal sum;
 
         // Global textblock for the total price, text changed dynamically by event handler
         TextBlock totalPrice = new TextBlock
@@ -112,7 +113,6 @@ namespace Butik
         }
         private Grid CreateCartPanel()
         {
-            var p = new Item();
             // Nested grid for the part Cart
             Grid cartGrid = new Grid
             {
@@ -187,7 +187,7 @@ namespace Butik
             Grid.SetColumn(couponBox, 1);
             Grid.SetRow(couponBox, 2);
 
-            
+
             cartGrid.Children.Add(totalPrice);
             Grid.SetColumn(totalPrice, 0);
             Grid.SetRow(totalPrice, 3);
@@ -218,6 +218,7 @@ namespace Butik
             cartGrid.Children.Add(checkout);
             Grid.SetColumn(checkout, 1);
             Grid.SetRow(checkout, 4);
+            checkout.Click += CheckoutOnClick;
 
             return cartGrid;
         }
@@ -279,12 +280,31 @@ namespace Butik
         private void AddToCartOnClick(object sender, RoutedEventArgs e)
         {
             Button button = (Button)sender;
-            cartBody.Items.Add(button.Tag);
+            cartBody.Items.Add($"{button.Tag} ({button.DataContext}kr)");
             sum += (decimal)button.DataContext;
             totalPrice.Text = "Total price: " + sum.ToString() + "kr";
-            
+        }
+        private void CheckoutOnClick(object sender, RoutedEventArgs e)
+        {
+            List<string> itemsList = new List<string>();
+            foreach (var item in cartBody.Items)
+            {
+                itemsList.Add(item.ToString());
+            }
+            var items = itemsList.OrderByDescending(p => p);
+            Button button = (Button)sender;
+            if (sum == 0)
+            {
+                MessageBox.Show("You did not buy anything");
+            }
+            else
+            {
+                MessageBox.Show("Thank you for your purchase! \n\nReceipt: \n\n" + String.Join('\n', items) + "\n\nTotal price: " + sum + "kr");
+                cartBody.Items.Clear();
+                sum = 0;
+                totalPrice.Text = "Total price: " + sum.ToString() + "kr";
+            }
 
         }
-
     }
 }
