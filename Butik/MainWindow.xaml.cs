@@ -2,18 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Butik
 {
@@ -23,17 +15,17 @@ namespace Butik
         public decimal Price;
         public string Description;
         public string ImageName;
-
     }
+
     public partial class MainWindow : Window
     {
-        private List<Item> itemList = new List<Item>();
-        readonly string path = @"C:\Windows\Temp\store.csv";
-        private ListBox cartBody = new ListBox { Margin = new Thickness(5) };
-        private decimal sum;
+        private readonly List<Item> itemList = new List<Item>();
+        private const string Path = @"C:\Windows\Temp\store.csv";
+        public readonly ListBox CartBody = new ListBox { Margin = new Thickness(5) };
+        internal decimal Sum;
 
         // Global textblock for the total price, text changed dynamically by event handler
-        TextBlock totalPrice = new TextBlock
+        private TextBlock totalPrice = new TextBlock
         {
             Text = "Total price: 0 kr",
             FontFamily = new FontFamily("Constantia"),
@@ -41,6 +33,7 @@ namespace Butik
             Margin = new Thickness(5),
             FontSize = 15
         };
+
         public MainWindow()
         {
             InitializeComponent();
@@ -69,7 +62,6 @@ namespace Butik
 
             grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(2, GridUnitType.Star) });
             grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-
 
             //Title text
             TextBlock titleText = new TextBlock
@@ -111,6 +103,7 @@ namespace Butik
             Grid.SetRow(leftPanel, 1);
             Grid.SetColumn(leftPanel, 0);
         }
+
         private Grid CreateCartPanel()
         {
             // Nested grid for the part Cart
@@ -132,11 +125,11 @@ namespace Butik
             Grid.SetRow(cartGrid, 1);
 
             // Cart list
-            cartBody.SelectedIndex = 0;
-            cartGrid.Children.Add(cartBody);
-            Grid.SetColumn(cartBody, 0);
-            Grid.SetRow(cartBody, 0);
-            Grid.SetColumnSpan(cartBody, 2);
+            CartBody.SelectedIndex = 0;
+            cartGrid.Children.Add(CartBody);
+            Grid.SetColumn(CartBody, 0);
+            Grid.SetRow(CartBody, 0);
+            Grid.SetColumnSpan(CartBody, 2);
 
             // Remove button
             Button remove = new Button
@@ -164,7 +157,7 @@ namespace Butik
             Grid.SetColumn(removeAll, 1);
             Grid.SetRow(removeAll, 1);
 
-            // Enter coupon 
+            // Enter coupon
             Label couponLabel = new Label
             {
                 Content = "Enter coupon:",
@@ -186,7 +179,6 @@ namespace Butik
             cartGrid.Children.Add(couponBox);
             Grid.SetColumn(couponBox, 1);
             Grid.SetRow(couponBox, 2);
-
 
             cartGrid.Children.Add(totalPrice);
             Grid.SetColumn(totalPrice, 0);
@@ -222,89 +214,116 @@ namespace Butik
 
             return cartGrid;
         }
+
         private WrapPanel StorePanel()
         {
-            var lines = File.ReadAllLines(path).Select(a => a.Split(','));
+            var p = new Item();
+
             WrapPanel wrapPanel = new WrapPanel
             {
                 Margin = new Thickness(5)
             };
+
+            try
+            {
+                var test = File.ReadAllLines(Path).Select(a => a.Split(','));
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("Cannot locate store file\nDetails: " + e.Message);
+                Environment.Exit(0);
+            }
+            var lines = File.ReadAllLines(Path).Select(a => a.Split(','));
+
             foreach (var item in lines) //Reads csv in order: name, price, description, image name
             {
-                var p = new Item
+                try
                 {
-                    Name = item[0],
-                    Price = int.Parse(item[1]),
-                    Description = item[2],
-                    ImageName = item[3]
-                };
-                itemList.Add(p);
+                    p.Name = item[0];
+                    p.Price = decimal.Parse(item[1]);
+                    p.Description = item[2];
+                    p.ImageName = item[3];
+                    itemList.Add(p);
 
-                ImageSource source = new BitmapImage(new Uri(@"Images\" + p.ImageName.Trim(' '), UriKind.Relative)); //Creates an image from the image folder + image name
-                Image image = new Image
+                    ImageSource source =
+                        new BitmapImage(new Uri(@"Images\" + p.ImageName.Trim(' '),
+                            UriKind.Relative)); //Creates an image from the image folder + image name
+                    Image image = new Image
+                    {
+                        Source = source,
+                        Width = 100,
+                        Height = 100,
+                        Stretch = Stretch.UniformToFill,
+                        HorizontalAlignment = HorizontalAlignment.Center,
+                        VerticalAlignment = VerticalAlignment.Center,
+                        Margin = new Thickness(5)
+                    };
+                    RenderOptions.SetBitmapScalingMode(image, BitmapScalingMode.HighQuality);
+                    wrapPanel.Children.Add(image);
+                    //Product title
+                    Label titleLabel = new Label
+                    {
+                        Content = p.Name + "\n\n" + p.Description.Trim(' '),
+                        Margin = new Thickness(5),
+                        FontFamily = new FontFamily("Constantia"),
+                        FontSize = 18,
+                        HorizontalContentAlignment = HorizontalAlignment.Left
+                    };
+                    wrapPanel.Children.Add(titleLabel);
+
+                    var button = new Button
+                    {
+                        Content = $"Buy ({p.Price}kr)",
+                        HorizontalAlignment = HorizontalAlignment.Stretch,
+                        Tag = p.Name,
+                        DataContext = p.Price
+                    };
+                    button.Click += AddToCartOnClick;
+                    wrapPanel.Children.Add(button);
+                }
+                catch (Exception)
                 {
-                    Source = source,
-                    Width = 100,
-                    Height = 100,
-                    Stretch = Stretch.UniformToFill,
-                    HorizontalAlignment = HorizontalAlignment.Center,
-                    VerticalAlignment = VerticalAlignment.Center,
-                    Margin = new Thickness(5)
-                };
-                RenderOptions.SetBitmapScalingMode(image, BitmapScalingMode.HighQuality);
-                wrapPanel.Children.Add(image);
-
-                //Product title
-                Label titleLabel = new Label
-                {
-                    Content = p.Name + "\n\n" + p.Description.Trim(' '),
-                    Margin = new Thickness(5),
-                    FontFamily = new FontFamily("Constantia"),
-                    FontSize = 18,
-                    HorizontalContentAlignment = HorizontalAlignment.Left
-                };
-                wrapPanel.Children.Add(titleLabel);
-                var button = new Button { Content = $"Buy ({p.Price}kr)", HorizontalAlignment = HorizontalAlignment.Stretch };
-                button.Tag = p.Name;
-                button.DataContext = p.Price;
-                button.Click += AddToCartOnClick;
-                wrapPanel.Children.Add(button);
-
-
+                    if (p.Name == null || p.Price == 0 || p.Description == null || p.ImageName == null)
+                    {
+                        continue; //Skips the iteration, if one of the attributes are missing.
+                    }
+                    MessageBox.Show("Alert!\n\nOne or more products could not be added due to missing attributes in csv file");
+                }
             }
             return wrapPanel;
-
         }
 
         //Adds the name of the product to the cart using button tag and updates the total price by assigning the price variable to datacontext
         private void AddToCartOnClick(object sender, RoutedEventArgs e)
         {
             Button button = (Button)sender;
-            cartBody.Items.Add($"{button.Tag} ({button.DataContext}kr)");
-            sum += (decimal)button.DataContext;
-            totalPrice.Text = "Total price: " + sum.ToString() + "kr";
+            CartBody.Items.Add($"{button.Tag} ({button.DataContext}kr)");
+            Sum += (decimal)button.DataContext;
+            totalPrice.Text = "Total price: " + Sum + "kr";
         }
+
         private void CheckoutOnClick(object sender, RoutedEventArgs e)
         {
             List<string> itemsList = new List<string>();
-            foreach (var item in cartBody.Items)
+            foreach (var item in CartBody.Items)
             {
                 itemsList.Add(item.ToString());
             }
+
             var items = itemsList.OrderByDescending(p => p);
             Button button = (Button)sender;
-            if (sum == 0)
+            if (Sum == 0)
             {
                 MessageBox.Show("You did not buy anything");
             }
             else
             {
-                MessageBox.Show("Thank you for your purchase! \n\nReceipt: \n\n" + String.Join('\n', items) + "\n\nTotal price: " + sum + "kr");
-                cartBody.Items.Clear();
-                sum = 0;
-                totalPrice.Text = "Total price: " + sum.ToString() + "kr";
+                MessageBox.Show("Thank you for your purchase! \n\nReceipt: \n\n" + string.Join('\n', items) +
+                                "\n\nTotal price: " + Sum + "kr");
+                CartBody.Items.Clear();
+                Sum = 0;
+                totalPrice.Text = "Total price: " + Sum + "kr";
             }
-
         }
     }
 }
