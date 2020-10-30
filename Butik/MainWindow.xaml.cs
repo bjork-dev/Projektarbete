@@ -125,11 +125,11 @@ namespace Butik
             Grid.SetRow(cartGrid, 1);
 
             // Cart list
-            CartBody.SelectedIndex = 0;
             cartGrid.Children.Add(CartBody);
             Grid.SetColumn(CartBody, 0);
             Grid.SetRow(CartBody, 0);
             Grid.SetColumnSpan(CartBody, 2);
+
 
             // Remove button
             Button remove = new Button
@@ -138,7 +138,8 @@ namespace Butik
                 Margin = new Thickness(5),
                 Padding = new Thickness(5),
                 FontFamily = new FontFamily("Constantia"),
-                FontSize = 15
+                FontSize = 15,
+                ToolTip = "Select a product in the cart and click remove"
             };
             cartGrid.Children.Add(remove);
             Grid.SetColumn(remove, 0);
@@ -156,6 +157,7 @@ namespace Butik
             cartGrid.Children.Add(removeAll);
             Grid.SetColumn(removeAll, 1);
             Grid.SetRow(removeAll, 1);
+            removeAll.Click += RemoveAllCartOnClick;
 
             // Enter coupon
             Label couponLabel = new Label
@@ -297,9 +299,9 @@ namespace Butik
         private void AddToCartOnClick(object sender, RoutedEventArgs e)
         {
             Button button = (Button)sender;
-            CartBody.Items.Add($"{button.Tag} ({button.DataContext}kr)");
+            CartBody.Items.Add($"{button.Tag} ({button.DataContext} kr)");
             Sum += (decimal)button.DataContext;
-            totalPrice.Text = "Total price: " + Sum + "kr";
+            totalPrice.Text = "Total price: " + Sum + " kr";
         }
 
         private void CheckoutOnClick(object sender, RoutedEventArgs e)
@@ -323,6 +325,19 @@ namespace Butik
                 CartBody.Items.Clear();
                 Sum = 0;
                 totalPrice.Text = "Total price: " + Sum + "kr";
+            }
+        }
+        private void RemoveAllCartOnClick(object sender, RoutedEventArgs e)
+        {
+            string message = "Would you like to remove all items from the cart?";
+            string caption = "Remove all";
+            var result = MessageBox.Show(message, caption, MessageBoxButton.YesNo);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                CartBody.Items.Clear();
+                Sum = 0;
+                totalPrice.Text = "Total price: " + Sum + " kr";
             }
         }
     }
