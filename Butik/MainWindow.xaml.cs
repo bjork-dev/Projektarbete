@@ -144,6 +144,7 @@ namespace Butik
             cartGrid.Children.Add(remove);
             Grid.SetColumn(remove, 0);
             Grid.SetRow(remove, 1);
+            remove.Click += RemoveFromCartOnClick;
 
             // Remove All button
             Button removeAll = new Button
@@ -339,6 +340,26 @@ namespace Butik
                 Sum = 0;
                 totalPrice.Text = "Total price: " + Sum + " kr";
             }
+        }
+        private void RemoveFromCartOnClick(object sender, RoutedEventArgs e)
+        {
+            int indexToRemove = CartBody.SelectedIndex;
+            if (indexToRemove == -1)
+            {
+                MessageBox.Show("First select a product in the cart and then click the button \"remove\"");
+            }
+            else
+            {
+                string itemToRemove = (string)CartBody.SelectedItem;
+                int indexStar = itemToRemove.LastIndexOf('(');
+                int indexEnd = itemToRemove.LastIndexOf(' ');
+                string sumTrim = itemToRemove.Substring(indexStar + 1, indexEnd - indexStar - 1);
+                decimal sumToRemove = decimal.Parse(sumTrim);
+                Sum -= sumToRemove;
+                totalPrice.Text = "Total price: " + Sum + " kr";
+                CartBody.Items.RemoveAt(indexToRemove);
+            }
+
         }
     }
 }
