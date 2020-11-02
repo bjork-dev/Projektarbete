@@ -19,10 +19,13 @@ namespace Butik
 
     public partial class MainWindow : Window
     {
+        //Global variables
         private readonly List<Item> itemList = new List<Item>();
+        private const string SavedCartPath = @"C:\Windows\Temp\cart.csv";
         private const string Path = @"C:\Windows\Temp\store.csv";
         public readonly ListBox CartBody = new ListBox { Margin = new Thickness(5) };
         internal decimal Sum;
+        List<string> savedItemsList = new List<string>(); //Stores the cart items
 
         // Global textblock for the total price, text changed dynamically by event handler
         private TextBlock totalPrice = new TextBlock
@@ -130,6 +133,19 @@ namespace Butik
             Grid.SetRow(CartBody, 0);
             Grid.SetColumnSpan(CartBody, 2);
 
+            if (File.Exists(SavedCartPath))
+            {
+                var lines = File.ReadAllLines(SavedCartPath).Select(a => a.Split(','));
+                foreach (var item in lines)
+                {
+                    string name = item[0];
+                    string price = item[1].Trim(' ');
+                    CartBody.Items.Add($"{name} ({price}kr)");
+                    Sum += decimal.Parse(price);
+                }
+                totalPrice.Text = "Total price: " + Sum + "kr";
+            }
+
 
             // Remove button
             Button remove = new Button
@@ -200,6 +216,7 @@ namespace Butik
             cartGrid.Children.Add(saveBtn);
             Grid.SetColumn(saveBtn, 0);
             Grid.SetRow(saveBtn, 4);
+            saveBtn.Click += SaveCart;
 
             // Button checkout
             Button checkout = new Button
@@ -229,7 +246,7 @@ namespace Butik
 
             try
             {
-                var test = File.ReadAllLines(Path).Select(a => a.Split(','));
+                var test = File.ReadAllLines(Path).Select(a => a.Split(',')); //Tests if the file exists in the path
             }
             catch (Exception e)
             {
@@ -300,20 +317,22 @@ namespace Butik
         private void AddToCartOnClick(object sender, RoutedEventArgs e)
         {
             Button button = (Button)sender;
-            CartBody.Items.Add($"{button.Tag} ({button.DataContext} kr)");
+            CartBody.Items.Add($"{button.Tag} ({button.DataContext}kr)");
+            string savedItem = $"{button.Tag}, {button.DataContext}";
+            savedItemsList.Add(savedItem);
             Sum += (decimal)button.DataContext;
             totalPrice.Text = "Total price: " + Sum + " kr";
         }
 
         private void CheckoutOnClick(object sender, RoutedEventArgs e)
         {
-            List<string> itemsList = new List<string>();
+
+            var checkoutList = new List<string>();
             foreach (var item in CartBody.Items)
             {
-                itemsList.Add(item.ToString());
+                checkoutList.Add(item.ToString());
             }
-
-            var items = itemsList.OrderByDescending(p => p);
+            var items = savedItemsList.OrderByDescending(p => p);
             Button button = (Button)sender;
             if (Sum == 0)
             {
@@ -321,7 +340,7 @@ namespace Butik
             }
             else
             {
-                MessageBox.Show("Thank you for your purchase! \n\nReceipt: \n\n" + string.Join('\n', items) +
+                MessageBox.Show("Thank you for your purchase! \n\nReceipt: \n\n" + string.Join('\n', checkoutList) +
                                 "\n\nTotal price: " + Sum + "kr");
                 CartBody.Items.Clear();
                 Sum = 0;
@@ -352,7 +371,7 @@ namespace Butik
             {
                 string itemToRemove = (string)CartBody.SelectedItem;
                 int indexStar = itemToRemove.LastIndexOf('(');
-                int indexEnd = itemToRemove.LastIndexOf(' ');
+                int indexEnd = itemToRemove.LastIndexOf("kr)");
                 string sumTrim = itemToRemove.Substring(indexStar + 1, indexEnd - indexStar - 1);
                 decimal sumToRemove = decimal.Parse(sumTrim);
                 Sum -= sumToRemove;
@@ -360,6 +379,20 @@ namespace Butik
                 CartBody.Items.RemoveAt(indexToRemove);
             }
 
+        }
+        private void SaveCart(object sender, RoutedEventArgs e)
+        {
+            if (Sum == 0)
+            {
+                MessageBox.Show("Cannot save an empty cart.");
+            }
+            else
+            {
+                File.WriteAllLines(SavedCartPath, savedItemsList);
+                savedItemsList.Clear();
+                MessageBox.Show("Cart saved");
+            }
+           
         }
     }
 }
