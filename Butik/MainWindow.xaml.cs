@@ -253,9 +253,7 @@ namespace Butik
                 MessageBox.Show("Cannot locate store file\nDetails: " + e.Message);
                 Environment.Exit(0);
             }
-            var lines = File.ReadAllLines(Path).Select(a => a.Split(','));
-
-            foreach (var item in lines) //Reads csv in order: name, price, description, image name
+            foreach (var item in File.ReadAllLines(Path).Select(a => a.Split(','))) //Reads csv in order: name, price, description, image name
             {
                 try
                 {
