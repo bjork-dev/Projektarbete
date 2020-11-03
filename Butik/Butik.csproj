@@ -11,7 +11,13 @@
 		</Content>
 	</ItemGroup>
 	<ItemGroup>
+	  <None Remove="Coupon.csv" />
 	  <None Remove="Images\siberia.png" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Content Include="Coupon.csv">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
 	</ItemGroup>
 
 </Project>
