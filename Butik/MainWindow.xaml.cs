@@ -20,7 +20,6 @@ namespace Butik
     public partial class MainWindow : Window
     {
         //Global variables
-        private readonly List<Item> itemList = new List<Item>();
         private const string SavedCartPath = @"C:\Windows\Temp\cart.csv";
         private const string Path = @"C:\Windows\Temp\store.csv";
         public readonly ListBox CartBody = new ListBox { Margin = new Thickness(5) };
@@ -261,7 +260,6 @@ namespace Butik
                     p.Price = decimal.Parse(item[1]);
                     p.Description = item[2];
                     p.ImageName = item[3];
-                    itemList.Add(p);
 
                     ImageSource source =
                         new BitmapImage(new Uri(@"Images\" + p.ImageName.Trim(' '),
@@ -325,11 +323,7 @@ namespace Butik
         private void CheckoutOnClick(object sender, RoutedEventArgs e)
         {
 
-            var checkoutList = new List<string>();
-            foreach (var item in CartBody.Items)
-            {
-                checkoutList.Add(item.ToString());
-            }
+            var checkoutList = (from object item in CartBody.Items select item.ToString()).ToList();
             var items = savedItemsList.OrderByDescending(p => p);
             Button button = (Button)sender;
             if (Sum == 0)
@@ -348,15 +342,11 @@ namespace Butik
         private void RemoveAllCartOnClick(object sender, RoutedEventArgs e)
         {
             string message = "Would you like to remove all items from the cart?";
-            string caption = "Remove all";
-            var result = MessageBox.Show(message, caption, MessageBoxButton.YesNo);
-
-            if (result == MessageBoxResult.Yes)
-            {
-                CartBody.Items.Clear();
-                Sum = 0;
-                totalPrice.Text = "Total price: " + Sum + " kr";
-            }
+            var result = MessageBox.Show(message, "Remove all", MessageBoxButton.YesNo);
+            if (result != MessageBoxResult.Yes) return;
+            CartBody.Items.Clear();
+            Sum = 0;
+            totalPrice.Text = "Total price: " + Sum + " kr";
         }
         private void RemoveFromCartOnClick(object sender, RoutedEventArgs e)
         {
