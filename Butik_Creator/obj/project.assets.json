@@ -30,19 +30,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\empir\\.nuget\\packages\\": {}
+    "C:\\Users\\liamb\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\empir\\source\\repos\\Projektarbete2\\Butik_Creator\\Butik_Creator.csproj",
+      "projectUniqueName": "C:\\Users\\liamb\\source\\repos\\Projektarbete\\Butik_Creator\\Butik_Creator.csproj",
       "projectName": "Butik_Creator",
-      "projectPath": "C:\\Users\\empir\\source\\repos\\Projektarbete2\\Butik_Creator\\Butik_Creator.csproj",
-      "packagesPath": "C:\\Users\\empir\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\empir\\source\\repos\\Projektarbete2\\Butik_Creator\\obj\\",
+      "projectPath": "C:\\Users\\liamb\\source\\repos\\Projektarbete\\Butik_Creator\\Butik_Creator.csproj",
+      "packagesPath": "C:\\Users\\liamb\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\liamb\\source\\repos\\Projektarbete\\Butik_Creator\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\empir\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\liamb\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -55,8 +55,8 @@
       "frameworks": {
         "netcoreapp3.1": {
           "projectReferences": {
-            "C:\\Users\\empir\\source\\repos\\Projektarbete2\\Butik\\Butik.csproj": {
-              "projectPath": "C:\\Users\\empir\\source\\repos\\Projektarbete2\\Butik\\Butik.csproj"
+            "C:\\Users\\liamb\\source\\repos\\Projektarbete\\Butik\\Butik.csproj": {
+              "projectPath": "C:\\Users\\liamb\\source\\repos\\Projektarbete\\Butik\\Butik.csproj"
             }
           }
         }
@@ -87,7 +87,7 @@
             "privateAssets": "none"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.402\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.403\\RuntimeIdentifierGraph.json"
       }
     }
   }

@@ -22,7 +22,6 @@ namespace Butik
     public partial class MainWindow : Window
     {
         //Global variables
-        private readonly List<Item> itemList = new List<Item>();
         private const string SavedCartPath = @"C:\Windows\Temp\cart.csv";
         private const string Path = @"C:\Windows\Temp\store.csv";
         private const string CouponPath = "Coupon.csv";
@@ -270,7 +269,6 @@ namespace Butik
                     p.Price = decimal.Parse(item[1]);
                     p.Description = item[2];
                     p.ImageName = item[3];
-                    itemList.Add(p);
 
                     ImageSource source =
                         new BitmapImage(new Uri(@"Images\" + p.ImageName.Trim(' '),
@@ -334,11 +332,7 @@ namespace Butik
         private void CheckoutOnClick(object sender, RoutedEventArgs e)
         {
 
-            var checkoutList = new List<string>();
-            foreach (var item in CartBody.Items)
-            {
-                checkoutList.Add(item.ToString());
-            }
+            var checkoutList = (from object item in CartBody.Items select item.ToString()).ToList();
             var items = savedItemsList.OrderByDescending(p => p);
             Button button = (Button)sender;
             if (sumWithoutDiscount == 0)
@@ -361,18 +355,15 @@ namespace Butik
         private void RemoveAllCartOnClick(object sender, RoutedEventArgs e)
         {
             string message = "Would you like to remove all items from the cart?";
-            string caption = "Remove all";
-            var result = MessageBox.Show(message, caption, MessageBoxButton.YesNo);
-
-            if (result == MessageBoxResult.Yes)
-            {
+             var result = MessageBox.Show(message, "Remove all", MessageBoxButton.YesNo);
+            if (result != MessageBoxResult.Yes) return;
+            
                 CartBody.Items.Clear();
                 sumWithoutDiscount = 0;
                 discount = 0;
                 totalPrice.Text = ShowTotalPrice();
                 couponBox.IsEnabled = true;
                 couponBox.Clear();
-            }
         }
         private void RemoveFromCartOnClick(object sender, RoutedEventArgs e)
         {
