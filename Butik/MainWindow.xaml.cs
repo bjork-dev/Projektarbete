@@ -149,11 +149,11 @@ namespace Butik
                     string name = item[0];
                     string price = item[1].Trim(' ');
                     CartBody.Items.Add($"{name} ({price}kr)");
+                    savedItemsList.Add(name + ", " + price);
                     sumWithoutDiscount += decimal.Parse(price);
                 }
                 totalPrice.Text = ShowTotalPrice();
             }
-
 
             // Remove button
             Button remove = new Button
@@ -345,6 +345,7 @@ namespace Butik
                                 "\n\n" + ShowTotalPrice());
 
                 CartBody.Items.Clear();
+                savedItemsList.Clear();
                 sumWithoutDiscount = 0;
                 discount = 0;
                 couponBox.IsEnabled = true;
@@ -355,15 +356,16 @@ namespace Butik
         private void RemoveAllCartOnClick(object sender, RoutedEventArgs e)
         {
             string message = "Would you like to remove all items from the cart?";
-             var result = MessageBox.Show(message, "Remove all", MessageBoxButton.YesNo);
+            var result = MessageBox.Show(message, "Remove all", MessageBoxButton.YesNo);
             if (result != MessageBoxResult.Yes) return;
-            
-                CartBody.Items.Clear();
-                sumWithoutDiscount = 0;
-                discount = 0;
-                totalPrice.Text = ShowTotalPrice();
-                couponBox.IsEnabled = true;
-                couponBox.Clear();
+
+            CartBody.Items.Clear();
+            sumWithoutDiscount = 0;
+            discount = 0;
+            totalPrice.Text = ShowTotalPrice();
+            couponBox.IsEnabled = true;
+            couponBox.Clear();
+            savedItemsList.Clear();
         }
         private void RemoveFromCartOnClick(object sender, RoutedEventArgs e)
         {
@@ -382,6 +384,7 @@ namespace Butik
                 UpdateSum(sumToRemove);
                 totalPrice.Text = ShowTotalPrice();
                 CartBody.Items.RemoveAt(indexToRemove);
+                savedItemsList.RemoveAt(indexToRemove);
             }
         }
         private void SaveCart(object sender, RoutedEventArgs e)
@@ -393,7 +396,6 @@ namespace Butik
             else
             {
                 File.WriteAllLines(SavedCartPath, savedItemsList);
-                savedItemsList.Clear();
                 MessageBox.Show("Cart saved");
             }
         }
@@ -450,5 +452,6 @@ namespace Butik
             sumTotal = Convert.ToDecimal(multiplier) * sumWithoutDiscount;
             sumTotal = Math.Round(sumTotal, 2);
         }
+
     }
 }
