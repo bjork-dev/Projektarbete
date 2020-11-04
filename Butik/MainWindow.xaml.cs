@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -25,10 +24,10 @@ namespace Butik
         private const string SavedCartPath = @"C:\Windows\Temp\cart.csv";
         private const string Path = @"C:\Windows\Temp\store.csv";
         private const string CouponPath = "Coupon.csv";
-        public readonly ListBox CartBody = new ListBox { Margin = new Thickness(5), MaxHeight = 335 };
+        private readonly ListBox CartBody = new ListBox { Margin = new Thickness(5), MaxHeight = 335 };
         internal decimal sumTotal;
         internal decimal sumWithoutDiscount;
-        List<string> savedItemsList = new List<string>(); //Stores the cart items
+        private List<string> savedItemsList = new List<string>(); //Stores the cart items
         private TextBox couponBox;
         private Dictionary<string, int> coupons;
         private int discount;
@@ -121,7 +120,6 @@ namespace Butik
             Grid cartGrid = new Grid
             {
                 Margin = new Thickness(5)
-
             };
             cartGrid.RowDefinitions.Add(new RowDefinition());
             cartGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
@@ -242,6 +240,7 @@ namespace Butik
 
             return cartGrid;
         }
+
         private WrapPanel StorePanel()
         {
             var p = new Item();
@@ -330,7 +329,6 @@ namespace Butik
 
         private void CheckoutOnClick(object sender, RoutedEventArgs e)
         {
-
             var checkoutList = (from object item in CartBody.Items select item.ToString()).ToList();
             var items = savedItemsList.OrderByDescending(p => p);
             Button button = (Button)sender;
@@ -352,6 +350,7 @@ namespace Butik
                 totalPrice.Text = ShowTotalPrice();
             }
         }
+
         private void RemoveAllCartOnClick(object sender, RoutedEventArgs e)
         {
             const string message = "Would you like to remove all items from the cart?";
@@ -366,6 +365,7 @@ namespace Butik
             couponBox.Clear();
             savedItemsList.Clear();
         }
+
         private void RemoveFromCartOnClick(object sender, RoutedEventArgs e)
         {
             int indexToRemove = CartBody.SelectedIndex;
@@ -386,6 +386,7 @@ namespace Butik
                 savedItemsList.RemoveAt(indexToRemove);
             }
         }
+
         private void SaveCart(object sender, RoutedEventArgs e)
         {
             if (sumWithoutDiscount == 0)
@@ -398,6 +399,7 @@ namespace Butik
                 MessageBox.Show("Cart saved");
             }
         }
+
         private Dictionary<string, int> Coupons() //Gets the coupon name and assings the number after ',' as its % discount
         {
             Dictionary<string, int> discountKeys = new Dictionary<string, int>();
@@ -410,6 +412,7 @@ namespace Butik
             }
             return discountKeys;
         }
+
         // Check whether the coupon gives a discount
         private void CouponBox_KeyDown(object sender, KeyEventArgs e)
         {
@@ -434,22 +437,20 @@ namespace Butik
                 }
             }
         }
+
         // Create a string with the total price
         private string ShowTotalPrice()
         {
             UpdateSum();
-            string newTotalPriceText;
-            newTotalPriceText = (discount == 0) ? "Total price: " + sumTotal + " kr" : "Total price with " + discount + "% discount: " + sumTotal + " kr";
-            return newTotalPriceText;
+            return (discount == 0) ? "Total price: " + sumTotal + " kr" : "Total price with " + discount + "% discount: " + sumTotal + " kr";
         }
-        // Calculate the price with discount. If a product was removed from the cart the method update the total price.     
+
+        // Calculate the price with discount. If a product was removed from the cart the method update the total price.
         private void UpdateSum(decimal subtrahend = 0)
         {
             double multiplier = (100.0 - discount) / 100.0;
             sumWithoutDiscount -= subtrahend;
-            sumTotal = Convert.ToDecimal(multiplier) * sumWithoutDiscount;
-            sumTotal = Math.Round(sumTotal, 2);
+            sumTotal = Math.Round(Convert.ToDecimal(multiplier) * sumWithoutDiscount, 2);
         }
-
     }
 }
