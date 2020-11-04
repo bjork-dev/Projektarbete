@@ -25,13 +25,13 @@ namespace Butik
         private const string SavedCartPath = @"C:\Windows\Temp\cart.csv";
         private const string Path = @"C:\Windows\Temp\store.csv";
         private const string CouponPath = "Coupon.csv";
-        public readonly ListBox CartBody = new ListBox { Margin = new Thickness(5) };
+        public readonly ListBox CartBody = new ListBox { Margin = new Thickness(5), MaxHeight = 335 };
         internal decimal sumTotal;
         internal decimal sumWithoutDiscount;
         List<string> savedItemsList = new List<string>(); //Stores the cart items
         private TextBox couponBox;
         private Dictionary<string, int> coupons;
-        private int discount = 0;
+        private int discount;
 
         // Global textblock for the total price, text changed dynamically by event handler
         private TextBlock totalPrice = new TextBlock
@@ -121,8 +121,8 @@ namespace Butik
             Grid cartGrid = new Grid
             {
                 Margin = new Thickness(5)
-            };
 
+            };
             cartGrid.RowDefinitions.Add(new RowDefinition());
             cartGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
             cartGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
@@ -143,8 +143,7 @@ namespace Butik
 
             if (File.Exists(SavedCartPath))
             {
-                var lines = File.ReadAllLines(SavedCartPath).Select(a => a.Split(','));
-                foreach (var item in lines)
+                foreach (var item in File.ReadAllLines(SavedCartPath).Select(a => a.Split(',')))
                 {
                     string name = item[0];
                     string price = item[1].Trim(' ');
@@ -355,7 +354,7 @@ namespace Butik
         }
         private void RemoveAllCartOnClick(object sender, RoutedEventArgs e)
         {
-            string message = "Would you like to remove all items from the cart?";
+            const string message = "Would you like to remove all items from the cart?";
             var result = MessageBox.Show(message, "Remove all", MessageBoxButton.YesNo);
             if (result != MessageBoxResult.Yes) return;
 
@@ -399,13 +398,12 @@ namespace Butik
                 MessageBox.Show("Cart saved");
             }
         }
-        private Dictionary<string, int> Coupons()
+        private Dictionary<string, int> Coupons() //Gets the coupon name and assings the number after ',' as its % discount
         {
             Dictionary<string, int> discountKeys = new Dictionary<string, int>();
             if (File.Exists(CouponPath))
             {
-                var lines = File.ReadAllLines(CouponPath).Select(a => a.Split(','));
-                foreach (var item in lines)
+                foreach (var item in File.ReadAllLines(CouponPath).Select(a => a.Split(',')))
                 {
                     discountKeys[item[0]] = int.Parse(item[1]);
                 }
