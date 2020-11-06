@@ -7,6 +7,20 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Images\lundgrens.jpg" />
+    <None Remove="Images\siberia.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Images\lundgrens.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\siberia.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Butik\Butik.csproj" />
   </ItemGroup>
 
