@@ -1,6 +1,7 @@
 ﻿using Butik;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Data;
 using System.IO;
 using System.Linq;
@@ -18,9 +19,22 @@ using System.Windows.Shapes;
 
 namespace Butik_Creator
 {
+    public class CodeDiscount
+    {
+        public string Code;
+        public int Discount;
+    }
+
     public partial class MainWindow : Window
     {
-        string discountPath = @"C:\Windows\Temp\Coupon.csv";
+        public const string CouponPath = @"C:\Windows\Temp\Coupon.csv";
+        private List<CodeDiscount> discountsList = new List<CodeDiscount>(); // List with valid codes and discounts (string "code", int discount)
+        private ObservableCollection<string> discountsShow = new ObservableCollection<string>(); // List for displaying valid codes and discounts ("code   discount %")
+        TextBox codeTextBox;
+        TextBox discountTextBox;
+        ListBox discountListBox;
+        Button addButton, discartButton, saveChangesButton;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -85,6 +99,9 @@ namespace Butik_Creator
             grid.Children.Add(discountPanel);
             Grid.SetRow(discountPanel, 1);
             Grid.SetColumn(discountPanel, 1);
+
+            LoadDiscounts(); // Load saved discounts from a file CouponPath (if it exists)
+
         }
         private Grid CreateAssortmentPanel()
         {
@@ -313,7 +330,6 @@ namespace Butik_Creator
 
             return assortmentGrid;
         }
-
         private Grid CreateDiscountPanel()
         {
             // Nested grid for the part Discount
@@ -326,18 +342,17 @@ namespace Butik_Creator
             discountGrid.RowDefinitions.Add(new RowDefinition());
             discountGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
 
-            ListBox discountListBox = new ListBox
+            discountListBox = new ListBox
             {
                 Margin = new Thickness(5),
-                MaxHeight = 500
+                MaxHeight = 500,
             };
             discountGrid.Children.Add(discountListBox);
             Grid.SetColumn(discountListBox, 0);
             Grid.SetRow(discountListBox, 0);
+            discountListBox.ItemsSource = discountsShow;
+            discountListBox.SelectionChanged += DiscountListBox_SelectionChanged;
 
-            discountListBox.Items.Add("code1   1%");
-            discountListBox.Items.Add("code5   5%");
-            discountListBox.Items.Add("12345678912345678912   100%");
 
             // Nested grid for buttons Remove and RemoveAll
             Grid removeButtonGrid = new Grid { Margin = new Thickness(5) };
@@ -346,26 +361,6 @@ namespace Butik_Creator
             discountGrid.Children.Add(removeButtonGrid);
             Grid.SetRow(removeButtonGrid, 1);
             Grid.SetColumn(removeButtonGrid, 0);
-
-            Button removeButton = new Button
-            {
-                Content = "Remove",
-                Margin = new Thickness(5),
-                FontSize = 12,
-                Padding = new Thickness(5)
-            };
-            removeButtonGrid.Children.Add(removeButton);
-            Grid.SetColumn(removeButton, 0);
-
-            Button removeAllButton = new Button
-            {
-                Content = "Remove all",
-                Margin = new Thickness(5),
-                FontSize = 12,
-                Padding = new Thickness(5)
-            };
-            removeButtonGrid.Children.Add(removeAllButton);
-            Grid.SetColumn(removeAllButton, 1);
 
             // Nested grid for textBoxes Code, Discount, buttons SaveChanges, Discart, AddNew
             Grid addDiscountGrid = new Grid { Margin = new Thickness(5) };
@@ -380,6 +375,28 @@ namespace Butik_Creator
             Grid.SetRow(addDiscountGrid, 0);
             Grid.SetColumn(addDiscountGrid, 1);
 
+            Button removeButton = new Button
+            {
+                Content = "Remove",
+                Margin = new Thickness(5),
+                FontSize = 12,
+                Padding = new Thickness(5)
+            };
+            removeButtonGrid.Children.Add(removeButton);
+            Grid.SetColumn(removeButton, 0);
+            removeButton.Click += RemoveButton_Click;
+
+            Button removeAllButton = new Button
+            {
+                Content = "Remove all",
+                Margin = new Thickness(5),
+                FontSize = 12,
+                Padding = new Thickness(5)
+            };
+            removeButtonGrid.Children.Add(removeAllButton);
+            Grid.SetColumn(removeAllButton, 1);
+            removeAllButton.Click += RemoveAllButton_Click;
+
             Label codeLabel = new Label
             {
                 Content = "Code",
@@ -390,7 +407,7 @@ namespace Butik_Creator
             Grid.SetColumn(codeLabel, 0);
             Grid.SetRow(codeLabel, 0);
 
-            TextBox codeTextBox = new TextBox
+            codeTextBox = new TextBox
             {
                 Margin = new Thickness(5),
                 VerticalAlignment = VerticalAlignment.Center,
@@ -402,7 +419,7 @@ namespace Butik_Creator
 
             Label discountLabel = new Label
             {
-                Content = "Discount",
+                Content = "Discount (%)",
                 Margin = new Thickness(5),
                 HorizontalContentAlignment = HorizontalAlignment.Right
             };
@@ -410,7 +427,7 @@ namespace Butik_Creator
             Grid.SetColumn(discountLabel, 0);
             Grid.SetRow(discountLabel, 1);
 
-            TextBox discountTextBox = new TextBox
+            discountTextBox = new TextBox
             {
                 Margin = new Thickness(5),
                 VerticalAlignment = VerticalAlignment.Center
@@ -419,7 +436,7 @@ namespace Butik_Creator
             Grid.SetColumn(discountTextBox, 1);
             Grid.SetRow(discountTextBox, 1);
 
-            Button addButton = new Button
+            addButton = new Button
             {
                 Content = "Add new",
                 Margin = new Thickness(5),
@@ -430,8 +447,9 @@ namespace Butik_Creator
             Grid.SetColumn(addButton, 0);
             addDiscountGrid.Children.Add(addButton);
             Grid.SetColumnSpan(addButton, 2);
+            addButton.Click += AddButton_Click;
 
-            Button saveChangesButton = new Button
+            saveChangesButton = new Button
             {
                 Content = "Save changes",
                 Margin = new Thickness(5),
@@ -442,8 +460,9 @@ namespace Butik_Creator
             Grid.SetRow(saveChangesButton, 3);
             Grid.SetColumn(saveChangesButton, 0);
             addDiscountGrid.Children.Add(saveChangesButton);
+            saveChangesButton.Click += SaveChangesButton_Click;
 
-            Button discartButton = new Button
+            discartButton = new Button
             {
                 Content = "Discart",
                 Margin = new Thickness(5),
@@ -454,18 +473,7 @@ namespace Butik_Creator
             Grid.SetRow(discartButton, 3);
             Grid.SetColumn(discartButton, 1);
             addDiscountGrid.Children.Add(discartButton);
-
-            TextBlock discountInfo = new TextBlock
-            {
-                Text = "Select a discount code to change",
-                HorizontalAlignment = HorizontalAlignment.Center,
-                Margin = new Thickness(5),
-                FontSize = 12,
-            };
-            Grid.SetRow(discountInfo, 4);
-            Grid.SetColumn(discountInfo, 0);
-            addDiscountGrid.Children.Add(discountInfo);
-            Grid.SetColumnSpan(discountInfo, 2);
+            discartButton.Click += DiscartButton_Click;
 
             Button saveButton = new Button
             {
@@ -481,10 +489,172 @@ namespace Butik_Creator
 
             return discountGrid;
         }
+        // Remove selected code and discount
+        private void RemoveButton_Click(object sender, RoutedEventArgs e)
+        {
+            int indexToRemove = discountListBox.SelectedIndex;
+            if (indexToRemove == -1)
+            {
+                MessageBox.Show("First select a code and then click the button \"remove\"");
+            }
+            else
+            {
+                discountListBox.SelectedIndex = -1;
+                discountsShow.RemoveAt(indexToRemove);
+                discountsList.RemoveAt(indexToRemove);
+                discountTextBox.Clear();
+                codeTextBox.Clear();
+                addButton.IsEnabled = true;
+                saveChangesButton.IsEnabled = false;
+                discartButton.IsEnabled = false;
+            }
+        }
 
+        private void RemoveAllButton_Click(object sender, RoutedEventArgs e)
+        {
+            string message = "Would you like to remove all discounts?";
+            var result = MessageBox.Show(message, "Remove all", MessageBoxButton.YesNo);
+            if (result != MessageBoxResult.Yes) return;
+            discountsShow.Clear();
+            discountsList.Clear();
+        }
+        //Save changes to the selected code
+        private void SaveChangesButton_Click(object sender, RoutedEventArgs e)
+        {
+            int indexSelected = discountListBox.SelectedIndex;
+            // Check that correct values are entered
+            int discount = IsDiscountCorrect(discountTextBox.Text);
+            int codeCheck = IsCodeCorrect(codeTextBox.Text);
+
+            if (codeCheck == 1 && discount > 0) // 
+            {
+                string code = codeTextBox.Text.ToLower();
+                List<CodeDiscount> copyDiscountsList = discountsList.Select(l => l).ToList();
+                copyDiscountsList.RemoveAt(indexSelected);
+                var duplication = copyDiscountsList.Where(l => l.Code == code);
+
+                if (duplication.Count() == 0) // check that there are no two identical codes
+                {
+                    discountsList[indexSelected].Code = code;
+                    discountsList[indexSelected].Discount = discount;
+                    discountsShow[indexSelected] = code + "   " + discount + " %";
+                    codeTextBox.Clear();
+                    discountTextBox.Clear();
+                    discountListBox.SelectedIndex = -1;
+                    addButton.IsEnabled = true;
+                    saveChangesButton.IsEnabled = false;
+                    discartButton.IsEnabled = false;
+                    discountListBox.SelectedIndex = -1;
+
+                }
+                else MessageBox.Show("This code already exists");
+            }
+            else if (codeCheck == -1) MessageBox.Show("Code must be at least 3 characters long.");
+            else if (codeCheck == -2) MessageBox.Show("Code must consist only of letters and numbers.");
+            else if (discount == -1) MessageBox.Show("Discount must be an integer.");
+            else if (discount == -2) MessageBox.Show("Discount must be an integer from 1 to 100.");
+        }
+        // Load saved discounts from a file CouponPath (if it exists)
+        private void LoadDiscounts()
+        {
+            if (File.Exists(CouponPath))
+            {
+                var lines = File.ReadAllLines(CouponPath).Select(a => a.Split(','));
+                foreach (var item in lines)
+                {
+                    if (IsCodeCorrect(item[0]) == 1 && IsDiscountCorrect(item[1]) > 0) // check that values are correct otherwise skip them
+                    {
+                        string code = item[0];
+                        int discount = int.Parse(item[1]);
+                        discountsList.Add(new CodeDiscount { Code = code, Discount = discount });
+                        discountsShow.Add(code + "   " + discount + " %");
+                    }
+                }
+            }
+        }
+        // Remove selection from ListBox
+        private void DiscartButton_Click(object sender, RoutedEventArgs e)
+        {
+            discartButton.IsEnabled = false;
+            saveChangesButton.IsEnabled = false;
+            addButton.IsEnabled = true;
+            discountTextBox.Clear();
+            codeTextBox.Clear();
+            discountListBox.SelectedIndex = -1;
+        }
+        // Show selected code and discount in the appropried TextBox
+        private void DiscountListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (discountListBox.SelectedIndex != -1)
+            {
+                codeTextBox.Text = discountsList[discountListBox.SelectedIndex].Code;
+                discountTextBox.Text = discountsList[discountListBox.SelectedIndex].Discount.ToString();
+                addButton.IsEnabled = false;
+                saveChangesButton.IsEnabled = true;
+                discartButton.IsEnabled = true;
+            }
+        }
+        // Add new code
+        private void AddButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Check that correct values are entered
+            int discount = IsDiscountCorrect(discountTextBox.Text);
+            int codeCheck = IsCodeCorrect(codeTextBox.Text);
+
+            if (codeCheck == 1 && discount > 0) // code and discount are correct
+            {
+                string code = codeTextBox.Text.ToLower();
+                var duplication = discountsList.Where(l => l.Code == code);
+
+                if (duplication.Count() == 0) // check whether this code is already in the list
+                {
+                    discountsList.Add(new CodeDiscount { Code = code, Discount = discount });
+                    discountsShow.Add(code + "   " + discount + " %");
+                    codeTextBox.Clear();
+                    discountTextBox.Clear();
+                }
+                else MessageBox.Show("This code already exists");
+            }
+            else if (codeCheck == -1) MessageBox.Show("Code must be at least 3 characters long.");
+            else if (codeCheck == -2) MessageBox.Show("Code must consist only of letters and numbers.");
+            else if (discount == -1) MessageBox.Show("Discount must be an integer.");
+            else if (discount == -2) MessageBox.Show("Discount must be an integer from 1 to 100.");
+        }
+        // Check that entered core is correct. Return 1 if code is correct, otherwise return an error code. 
+        private int IsCodeCorrect(string code)
+        {
+            if (code.Length < 3) return -1;
+
+            char[] letters = code.ToCharArray();
+            var wrongSymbols = letters.Where(l => !char.IsLetterOrDigit(l));
+
+            if (wrongSymbols.Count() > 0) return -2;
+
+            return 1;
+        }
+        // Check that entered discount is correct. Return discount(int) if entered value is correct, otherwise return an error code. 
+        private int IsDiscountCorrect(string discountToCheck)
+        {
+            int discount;
+            try
+            {
+                discount = int.Parse(discountToCheck);
+            }
+            catch
+            {
+                return -1;
+            }
+
+            if (discount > 100 || discount < 1)
+            {
+                return -2;
+            }
+
+            return discount;
+        }
         private void SaveButton_Click(object sender, RoutedEventArgs e)
         {
-
+            // ....
         }
     }
 }
