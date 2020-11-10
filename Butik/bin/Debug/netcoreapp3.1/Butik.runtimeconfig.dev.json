@@ -1,8 +1,8 @@
 {
   "runtimeOptions": {
     "additionalProbingPaths": [
-      "C:\\Users\\empir\\.dotnet\\store\\|arch|\\|tfm|",
-      "C:\\Users\\empir\\.nuget\\packages"
+      "C:\\Users\\liamb\\.dotnet\\store\\|arch|\\|tfm|",
+      "C:\\Users\\liamb\\.nuget\\packages"
     ]
   }
 }

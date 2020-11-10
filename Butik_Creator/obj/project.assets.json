@@ -35,11 +35,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\liamb\\source\\repos\\Projektarbete\\Butik_Creator\\Butik_Creator.csproj",
+      "projectUniqueName": "C:\\Users\\liamb\\Source\\Repos\\Projektarbete\\Butik_Creator\\Butik_Creator.csproj",
       "projectName": "Butik_Creator",
-      "projectPath": "C:\\Users\\liamb\\source\\repos\\Projektarbete\\Butik_Creator\\Butik_Creator.csproj",
+      "projectPath": "C:\\Users\\liamb\\Source\\Repos\\Projektarbete\\Butik_Creator\\Butik_Creator.csproj",
       "packagesPath": "C:\\Users\\liamb\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\liamb\\source\\repos\\Projektarbete\\Butik_Creator\\obj\\",
+      "outputPath": "C:\\Users\\liamb\\Source\\Repos\\Projektarbete\\Butik_Creator\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\liamb\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -55,8 +55,8 @@
       "frameworks": {
         "netcoreapp3.1": {
           "projectReferences": {
-            "C:\\Users\\liamb\\source\\repos\\Projektarbete\\Butik\\Butik.csproj": {
-              "projectPath": "C:\\Users\\liamb\\source\\repos\\Projektarbete\\Butik\\Butik.csproj"
+            "C:\\Users\\liamb\\Source\\Repos\\Projektarbete\\Butik\\Butik.csproj": {
+              "projectPath": "C:\\Users\\liamb\\Source\\Repos\\Projektarbete\\Butik\\Butik.csproj"
             }
           }
         }

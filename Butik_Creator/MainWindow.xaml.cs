@@ -16,6 +16,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Path = System.IO.Path;
 
 namespace Butik_Creator
 {
@@ -33,7 +34,14 @@ namespace Butik_Creator
         TextBox codeTextBox;
         TextBox discountTextBox;
         ListBox discountListBox;
-        Button addButton, discartButton, saveChangesButton;
+        Button addButton, discardButton, saveChangesButton;
+        private Dictionary<string, int> coupons;
+
+        ListBox assortmentListBox = new ListBox
+        {
+            Margin = new Thickness(5),
+            //   MaxHeight = 300
+        };
 
         public MainWindow()
         {
@@ -117,11 +125,7 @@ namespace Butik_Creator
             assortmentGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
             assortmentGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(3, GridUnitType.Star) });
 
-            ListBox assortmentListBox = new ListBox
-            {
-                Margin = new Thickness(5),
-                //   MaxHeight = 300
-            };
+            
             assortmentGrid.Children.Add(assortmentListBox);
             Grid.SetColumn(assortmentListBox, 0);
             Grid.SetRow(assortmentListBox, 0);
@@ -140,10 +144,11 @@ namespace Butik_Creator
             assortmentGrid.Children.Add(removeAllButton);
             Grid.SetColumn(removeAllButton, 0);
             Grid.SetRow(removeAllButton, 1);
+            removeAllButton.Click += RemoveAll;
 
             Label galleryLabel = new Label
             {
-                Content = "Bild gallery",
+                Content = "Image Gallery",
                 FontSize = 15,
                 Margin = new Thickness(5),
                 HorizontalContentAlignment = HorizontalAlignment.Center
@@ -462,18 +467,18 @@ namespace Butik_Creator
             addDiscountGrid.Children.Add(saveChangesButton);
             saveChangesButton.Click += SaveChangesButton_Click;
 
-            discartButton = new Button
+            discardButton = new Button
             {
-                Content = "Discart",
+                Content = "Discard",
                 Margin = new Thickness(5),
                 FontSize = 12,
                 Padding = new Thickness(5),
                 IsEnabled = false
             };
-            Grid.SetRow(discartButton, 3);
-            Grid.SetColumn(discartButton, 1);
-            addDiscountGrid.Children.Add(discartButton);
-            discartButton.Click += DiscartButton_Click;
+            Grid.SetRow(discardButton, 3);
+            Grid.SetColumn(discardButton, 1);
+            addDiscountGrid.Children.Add(discardButton);
+            discardButton.Click += DiscardButtonClick;
 
             Button saveButton = new Button
             {
@@ -485,7 +490,7 @@ namespace Butik_Creator
             Grid.SetRow(saveButton, 1);
             Grid.SetColumn(saveButton, 1);
             discountGrid.Children.Add(saveButton);
-            saveButton.Click += SaveButton_Click;
+            saveButton.Click += SaveCoupon;
 
             return discountGrid;
         }
@@ -506,13 +511,13 @@ namespace Butik_Creator
                 codeTextBox.Clear();
                 addButton.IsEnabled = true;
                 saveChangesButton.IsEnabled = false;
-                discartButton.IsEnabled = false;
+                discardButton.IsEnabled = false;
             }
         }
 
         private void RemoveAllButton_Click(object sender, RoutedEventArgs e)
         {
-            string message = "Would you like to remove all discounts?";
+            const string message = "Would you like to remove all discounts?";
             var result = MessageBox.Show(message, "Remove all", MessageBoxButton.YesNo);
             if (result != MessageBoxResult.Yes) return;
             discountsShow.Clear();
@@ -526,56 +531,76 @@ namespace Butik_Creator
             int discount = IsDiscountCorrect(discountTextBox.Text);
             int codeCheck = IsCodeCorrect(codeTextBox.Text);
 
-            if (codeCheck == 1 && discount > 0) // 
+            switch (codeCheck)
             {
-                string code = codeTextBox.Text.ToLower();
-                List<CodeDiscount> copyDiscountsList = discountsList.Select(l => l).ToList();
-                copyDiscountsList.RemoveAt(indexSelected);
-                var duplication = copyDiscountsList.Where(l => l.Code == code);
+                // 
+                case 1 when discount > 0:
+                    {
+                        string code = codeTextBox.Text.ToLower();
+                        List<CodeDiscount> copyDiscountsList = discountsList.Select(l => l).ToList();
+                        copyDiscountsList.RemoveAt(indexSelected);
+                        var duplication = copyDiscountsList.Where(l => l.Code == code);
 
-                if (duplication.Count() == 0) // check that there are no two identical codes
-                {
-                    discountsList[indexSelected].Code = code;
-                    discountsList[indexSelected].Discount = discount;
-                    discountsShow[indexSelected] = code + "   " + discount + " %";
-                    codeTextBox.Clear();
-                    discountTextBox.Clear();
-                    discountListBox.SelectedIndex = -1;
-                    addButton.IsEnabled = true;
-                    saveChangesButton.IsEnabled = false;
-                    discartButton.IsEnabled = false;
-                    discountListBox.SelectedIndex = -1;
+                        if (!duplication.Any()) // check that there are no two identical codes
+                        {
+                            discountsList[indexSelected].Code = code;
+                            discountsList[indexSelected].Discount = discount;
+                            discountsShow[indexSelected] = code + "   " + discount + " %";
+                            codeTextBox.Clear();
+                            discountTextBox.Clear();
+                            discountListBox.SelectedIndex = -1;
+                            addButton.IsEnabled = true;
+                            saveChangesButton.IsEnabled = false;
+                            discardButton.IsEnabled = false;
+                            discountListBox.SelectedIndex = -1;
 
-                }
-                else MessageBox.Show("This code already exists");
+                        }
+                        else MessageBox.Show("This code already exists");
+
+                        break;
+                    }
+                case -1:
+                    MessageBox.Show("Code must be at least 3 characters long.");
+                    break;
+                case -2:
+                    MessageBox.Show("Code must consist only of letters and numbers.");
+                    break;
+                default:
+                    {
+                        switch (discount)
+                        {
+                            case -1:
+                                MessageBox.Show("Discount must be an integer.");
+                                break;
+                            case -2:
+                                MessageBox.Show("Discount must be an integer from 1 to 100.");
+                                break;
+                        }
+
+                        break;
+                    }
             }
-            else if (codeCheck == -1) MessageBox.Show("Code must be at least 3 characters long.");
-            else if (codeCheck == -2) MessageBox.Show("Code must consist only of letters and numbers.");
-            else if (discount == -1) MessageBox.Show("Discount must be an integer.");
-            else if (discount == -2) MessageBox.Show("Discount must be an integer from 1 to 100.");
         }
         // Load saved discounts from a file CouponPath (if it exists)
         private void LoadDiscounts()
         {
-            if (File.Exists(CouponPath))
+            if (!File.Exists(CouponPath)) return;
+            var lines = File.ReadAllLines(CouponPath).Select(a => a.Split(','));
+            foreach (var item in lines)
             {
-                var lines = File.ReadAllLines(CouponPath).Select(a => a.Split(','));
-                foreach (var item in lines)
+                if (IsCodeCorrect(item[0]) == 1 && IsDiscountCorrect(item[1]) > 0) // check that values are correct otherwise skip them
                 {
-                    if (IsCodeCorrect(item[0]) == 1 && IsDiscountCorrect(item[1]) > 0) // check that values are correct otherwise skip them
-                    {
-                        string code = item[0];
-                        int discount = int.Parse(item[1]);
-                        discountsList.Add(new CodeDiscount { Code = code, Discount = discount });
-                        discountsShow.Add(code + "   " + discount + " %");
-                    }
+                    string code = item[0];
+                    int discount = int.Parse(item[1]);
+                    discountsList.Add(new CodeDiscount { Code = code, Discount = discount });
+                    discountsShow.Add(code + "   " + discount + " %");
                 }
             }
         }
         // Remove selection from ListBox
-        private void DiscartButton_Click(object sender, RoutedEventArgs e)
+        private void DiscardButtonClick(object sender, RoutedEventArgs e)
         {
-            discartButton.IsEnabled = false;
+            discardButton.IsEnabled = false;
             saveChangesButton.IsEnabled = false;
             addButton.IsEnabled = true;
             discountTextBox.Clear();
@@ -591,7 +616,7 @@ namespace Butik_Creator
                 discountTextBox.Text = discountsList[discountListBox.SelectedIndex].Discount.ToString();
                 addButton.IsEnabled = false;
                 saveChangesButton.IsEnabled = true;
-                discartButton.IsEnabled = true;
+                discardButton.IsEnabled = true;
             }
         }
         // Add new code
@@ -601,24 +626,44 @@ namespace Butik_Creator
             int discount = IsDiscountCorrect(discountTextBox.Text);
             int codeCheck = IsCodeCorrect(codeTextBox.Text);
 
-            if (codeCheck == 1 && discount > 0) // code and discount are correct
+            switch (codeCheck)
             {
-                string code = codeTextBox.Text.ToLower();
-                var duplication = discountsList.Where(l => l.Code == code);
+                // code and discount are correct
+                case 1 when discount > 0:
+                    {
+                        string code = codeTextBox.Text.ToLower();
+                        var duplication = discountsList.Where(l => l.Code == code);
 
-                if (duplication.Count() == 0) // check whether this code is already in the list
-                {
-                    discountsList.Add(new CodeDiscount { Code = code, Discount = discount });
-                    discountsShow.Add(code + "   " + discount + " %");
-                    codeTextBox.Clear();
-                    discountTextBox.Clear();
-                }
-                else MessageBox.Show("This code already exists");
+                        if (!duplication.Any()) // check whether this code is already in the list
+                        {
+                            discountsList.Add(new CodeDiscount { Code = code, Discount = discount });
+                            discountsShow.Add(code + "   " + discount + " %");
+                            codeTextBox.Clear();
+                            discountTextBox.Clear();
+                        }
+                        else MessageBox.Show("This code already exists");
+
+                        break;
+                    }
+                case -1:
+                    MessageBox.Show("Code must be at least 3 characters long.");
+                    break;
+                case -2:
+                    MessageBox.Show("Code must consist only of letters and numbers.");
+                    break;
+                default:
+                    switch (discount)
+                    {
+                        case -1:
+                            MessageBox.Show("Discount must be an integer.");
+                            break;
+                        case -2:
+                            MessageBox.Show("Discount must be an integer from 1 to 100.");
+                            break;
+                    }
+
+                    break;
             }
-            else if (codeCheck == -1) MessageBox.Show("Code must be at least 3 characters long.");
-            else if (codeCheck == -2) MessageBox.Show("Code must consist only of letters and numbers.");
-            else if (discount == -1) MessageBox.Show("Discount must be an integer.");
-            else if (discount == -2) MessageBox.Show("Discount must be an integer from 1 to 100.");
         }
         // Check that entered core is correct. Return 1 if code is correct, otherwise return an error code. 
         private int IsCodeCorrect(string code)
@@ -628,7 +673,7 @@ namespace Butik_Creator
             char[] letters = code.ToCharArray();
             var wrongSymbols = letters.Where(l => !char.IsLetterOrDigit(l));
 
-            if (wrongSymbols.Count() > 0) return -2;
+            if (wrongSymbols.Any()) return -2;
 
             return 1;
         }
@@ -652,9 +697,23 @@ namespace Butik_Creator
 
             return discount;
         }
-        private void SaveButton_Click(object sender, RoutedEventArgs e)
+        private void SaveCoupon(object sender, RoutedEventArgs e)
         {
-            // ....
+            //string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Coupon.csv"); //temporary path for testing
+            List<string> temp = discountsList.Select(code => code.Code + "," + code.Discount).ToList();
+            File.WriteAllLines(CouponPath, temp);
+            MessageBox.Show("File saved");
         }
+
+        private void RemoveAll(object sender, RoutedEventArgs e)
+        {
+            if (assortmentListBox.Items.Count == 0) return;
+            const string message = "Would you like to remove all items from the cart?";
+            var result = MessageBox.Show(message, "Remove all", MessageBoxButton.YesNo);
+            if (result != MessageBoxResult.Yes) return;
+            assortmentListBox.Items.Clear();
+        }
+
+
     }
 }
