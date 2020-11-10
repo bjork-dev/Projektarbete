@@ -26,11 +26,27 @@ namespace Butik_Creator
         public int Discount;
     }
 
+    public class Store
+    {
+        public string Name;
+        public decimal Price;
+        public string Description;
+        public string ImageName;
+    }
+
     public partial class MainWindow : Window
     {
+        private const string Path = @"C:\Windows\Temp\store.csv";
         public const string CouponPath = @"C:\Windows\Temp\Coupon.csv";
-        private List<CodeDiscount> discountsList = new List<CodeDiscount>(); // List with valid codes and discounts (string "code", int discount)
-        private ObservableCollection<string> discountsShow = new ObservableCollection<string>(); // List for displaying valid codes and discounts ("code   discount %")
+
+        private List<CodeDiscount>
+            discountsList =
+                new List<CodeDiscount>(); // List with valid codes and discounts (string "code", int discount)
+
+        private ObservableCollection<string>
+            discountsShow =
+                new ObservableCollection<string>(); // List for displaying valid codes and discounts ("code   discount %")
+
         TextBox codeTextBox;
         TextBox discountTextBox;
         ListBox discountListBox;
@@ -41,6 +57,21 @@ namespace Butik_Creator
         {
             Margin = new Thickness(5),
             //   MaxHeight = 300
+        };
+
+        TextBox nameTextBox = new TextBox
+        {
+            Margin = new Thickness(5)
+        };
+
+        TextBox priceTextBox = new TextBox
+        {
+            Margin = new Thickness(5)
+        };
+
+        TextBox descriptionTextBox = new TextBox
+        {
+            Margin = new Thickness(5)
         };
 
         public MainWindow()
@@ -109,8 +140,9 @@ namespace Butik_Creator
             Grid.SetColumn(discountPanel, 1);
 
             LoadDiscounts(); // Load saved discounts from a file CouponPath (if it exists)
-
+            LoadStore(); // Load saved store from a file store (if it exists)
         }
+
         private Grid CreateAssortmentPanel()
         {
             // Nested grid for the part Assortment
@@ -125,26 +157,22 @@ namespace Butik_Creator
             assortmentGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
             assortmentGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(3, GridUnitType.Star) });
 
-            
+
             assortmentGrid.Children.Add(assortmentListBox);
             Grid.SetColumn(assortmentListBox, 0);
             Grid.SetRow(assortmentListBox, 0);
 
-            assortmentListBox.Items.Add("item 1  100 kr");
-            assortmentListBox.Items.Add("item 2  200 kr");
-            assortmentListBox.Items.Add("item 3  300 kr");
-
-            Button removeAllButton = new Button
+            Button assortRemoveAll = new Button
             {
                 Content = "Remove all",
                 Margin = new Thickness(5),
                 FontSize = 12,
                 Padding = new Thickness(5)
             };
-            assortmentGrid.Children.Add(removeAllButton);
-            Grid.SetColumn(removeAllButton, 0);
-            Grid.SetRow(removeAllButton, 1);
-            removeAllButton.Click += RemoveAll;
+            assortmentGrid.Children.Add(assortRemoveAll);
+            Grid.SetColumn(assortRemoveAll, 0);
+            Grid.SetRow(assortRemoveAll, 1);
+            assortRemoveAll.Click += RemoveAll;
 
             Label galleryLabel = new Label
             {
@@ -221,10 +249,7 @@ namespace Butik_Creator
             Grid.SetColumn(nameLabel, 0);
             Grid.SetRow(nameLabel, 0);
 
-            TextBox nameTextBox = new TextBox
-            {
-                Margin = new Thickness(5)
-            };
+
             nestedGrid.Children.Add(nameTextBox);
             Grid.SetColumn(nameTextBox, 1);
             Grid.SetRow(nameTextBox, 0);
@@ -240,10 +265,6 @@ namespace Butik_Creator
             Grid.SetColumn(descriptionLabel, 0);
             Grid.SetRow(descriptionLabel, 1);
 
-            TextBox descriptionTextBox = new TextBox
-            {
-                Margin = new Thickness(5)
-            };
             nestedGrid.Children.Add(descriptionTextBox);
             Grid.SetColumn(descriptionTextBox, 1);
             Grid.SetRow(descriptionTextBox, 1);
@@ -259,10 +280,7 @@ namespace Butik_Creator
             Grid.SetColumn(priceLabel, 0);
             Grid.SetRow(priceLabel, 2);
 
-            TextBox priceTextBox = new TextBox
-            {
-                Margin = new Thickness(5)
-            };
+
             nestedGrid.Children.Add(priceTextBox);
             Grid.SetColumn(priceTextBox, 1);
             Grid.SetRow(priceTextBox, 2);
@@ -320,6 +338,7 @@ namespace Butik_Creator
             Grid.SetColumn(addButton, 1);
             nestedGrid.Children.Add(addButton);
             Grid.SetColumnSpan(addButton, 2);
+            addButton.Click += AddAssortment;
 
             Button saveButton = new Button
             {
@@ -335,6 +354,7 @@ namespace Butik_Creator
 
             return assortmentGrid;
         }
+
         private Grid CreateDiscountPanel()
         {
             // Nested grid for the part Discount
@@ -452,7 +472,7 @@ namespace Butik_Creator
             Grid.SetColumn(addButton, 0);
             addDiscountGrid.Children.Add(addButton);
             Grid.SetColumnSpan(addButton, 2);
-            addButton.Click += AddButton_Click;
+            addButton.Click += AddCoupon;
 
             saveChangesButton = new Button
             {
@@ -494,6 +514,7 @@ namespace Butik_Creator
 
             return discountGrid;
         }
+
         // Remove selected code and discount
         private void RemoveButton_Click(object sender, RoutedEventArgs e)
         {
@@ -523,6 +544,7 @@ namespace Butik_Creator
             discountsShow.Clear();
             discountsList.Clear();
         }
+
         //Save changes to the selected code
         private void SaveChangesButton_Click(object sender, RoutedEventArgs e)
         {
@@ -581,6 +603,7 @@ namespace Butik_Creator
                     }
             }
         }
+
         // Load saved discounts from a file CouponPath (if it exists)
         private void LoadDiscounts()
         {
@@ -588,7 +611,8 @@ namespace Butik_Creator
             var lines = File.ReadAllLines(CouponPath).Select(a => a.Split(','));
             foreach (var item in lines)
             {
-                if (IsCodeCorrect(item[0]) == 1 && IsDiscountCorrect(item[1]) > 0) // check that values are correct otherwise skip them
+                if (IsCodeCorrect(item[0]) == 1 && IsDiscountCorrect(item[1]) > 0
+                ) // check that values are correct otherwise skip them
                 {
                     string code = item[0];
                     int discount = int.Parse(item[1]);
@@ -597,6 +621,22 @@ namespace Butik_Creator
                 }
             }
         }
+
+        private void LoadStore()
+        {
+            var p = new Store();
+            if (!File.Exists(Path)) return;
+            foreach (var item in File.ReadAllLines(Path).Select(a => a.Split(','))
+            ) //Reads csv in order: name, price, description, image name
+            {
+                p.Name = item[0];
+                p.Price = decimal.Parse(item[1]);
+                p.Description = item[2];
+                p.ImageName = item[3];
+                assortmentListBox.Items.Add($"{p.Name} {p.Price}kr");
+            }
+        }
+
         // Remove selection from ListBox
         private void DiscardButtonClick(object sender, RoutedEventArgs e)
         {
@@ -607,6 +647,7 @@ namespace Butik_Creator
             codeTextBox.Clear();
             discountListBox.SelectedIndex = -1;
         }
+
         // Show selected code and discount in the appropried TextBox
         private void DiscountListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -619,8 +660,9 @@ namespace Butik_Creator
                 discardButton.IsEnabled = true;
             }
         }
+
         // Add new code
-        private void AddButton_Click(object sender, RoutedEventArgs e)
+        private void AddCoupon(object sender, RoutedEventArgs e)
         {
             // Check that correct values are entered
             int discount = IsDiscountCorrect(discountTextBox.Text);
@@ -665,6 +707,7 @@ namespace Butik_Creator
                     break;
             }
         }
+
         // Check that entered core is correct. Return 1 if code is correct, otherwise return an error code. 
         private int IsCodeCorrect(string code)
         {
@@ -677,6 +720,7 @@ namespace Butik_Creator
 
             return 1;
         }
+
         // Check that entered discount is correct. Return discount(int) if entered value is correct, otherwise return an error code. 
         private int IsDiscountCorrect(string discountToCheck)
         {
@@ -697,6 +741,7 @@ namespace Butik_Creator
 
             return discount;
         }
+
         private void SaveCoupon(object sender, RoutedEventArgs e)
         {
             //string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Coupon.csv"); //temporary path for testing
@@ -712,6 +757,22 @@ namespace Butik_Creator
             var result = MessageBox.Show(message, "Remove all", MessageBoxButton.YesNo);
             if (result != MessageBoxResult.Yes) return;
             assortmentListBox.Items.Clear();
+            File.WriteAllText(Path, null);
+        }
+
+        private void AddAssortment(object sender, RoutedEventArgs e)
+        {
+            var s = new Store
+            {
+                Name = nameTextBox.Text,
+                Price = decimal.Parse(priceTextBox.Text),
+                Description = descriptionTextBox.Text
+            };
+
+
+            assortmentListBox.Items.Add($"{s.Name} {s.Price}kr");
+
+
         }
 
 
