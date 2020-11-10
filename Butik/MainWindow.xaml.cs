@@ -250,15 +250,15 @@ namespace Butik
                 Margin = new Thickness(5)
             };
 
-            try
+            if (!File.Exists(Path))
             {
-                var test = File.ReadAllLines(Path).Select(a => a.Split(',')); //Tests if the file exists in the path
+                File.Copy("store.csv",Path);
             }
-            catch (Exception e)
+            if (!File.Exists(CouponPath))
             {
-                MessageBox.Show("Cannot locate store file\nDetails: " + e.Message);
-                Environment.Exit(0);
+                File.Copy("Coupon.csv", CouponPath);
             }
+
             foreach (var item in File.ReadAllLines(Path).Select(a => a.Split(','))) //Reads csv in order: name, price, description, image name
             {
                 try

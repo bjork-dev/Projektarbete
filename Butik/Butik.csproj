@@ -13,9 +13,13 @@
 	<ItemGroup>
 	  <None Remove="Coupon.csv" />
 	  <None Remove="Images\siberia.png" />
+	  <None Remove="store.csv" />
 	</ItemGroup>
 	<ItemGroup>
 	  <Content Include="Coupon.csv">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="store.csv">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>
 	</ItemGroup>
