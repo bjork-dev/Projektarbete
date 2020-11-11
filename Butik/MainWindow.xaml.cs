@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Butik_Creator;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -29,7 +30,7 @@ namespace Butik
         internal decimal sumWithoutDiscount;
         private List<string> savedItemsList = new List<string>(); //Stores the cart items
         private TextBox couponBox;
-        private Dictionary<string, int> coupons;
+        private List<CodeDiscount> discountsList = new List<CodeDiscount>(); // List with valid codes and discounts (string "code", int discount)
         private int discount;
 
         // Global textblock for the total price, text changed dynamically by event handler
@@ -50,7 +51,6 @@ namespace Butik
 
         private void Start()
         {
-            coupons = Coupons();    // Load infornation about valid discounts
 
             // Window options
             Title = "Store";
@@ -112,6 +112,8 @@ namespace Butik
             grid.Children.Add(leftPanel);
             Grid.SetRow(leftPanel, 1);
             Grid.SetColumn(leftPanel, 0);
+
+            Butik_Creator.MainWindow.LoadDiscounts(discountsList); // Load saved discounts from a file at CouponGlobalPath. If it doesn´t exist, then load discounts from the local file Coupons.scv   
         }
 
         private Grid CreateCartPanel()
@@ -400,34 +402,18 @@ namespace Butik
             }
         }
 
-        private Dictionary<string, int> Coupons() //Gets the coupon name and assings the number after ',' as its % discount
-        {
-            Dictionary<string, int> discountKeys = new Dictionary<string, int>();
-            if (File.Exists(CouponPath))
-            {
-                foreach (var item in File.ReadAllLines(CouponPath).Select(a => a.Split(',')))
-                {
-                    discountKeys[item[0]] = int.Parse(item[1]);
-                }
-            }
-            return discountKeys;
-        }
-
         // Check whether the coupon gives a discount
         private void CouponBox_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
             {
                 string code = couponBox.Text.ToLower();
-                if (couponBox.Text.Length < 3)
-                {
-                    MessageBox.Show("Code must be at leaste 3 characters long!");
-                    couponBox.Clear();
-                }
-                else if (coupons.ContainsKey(code))
+                var validCodeDiscount = discountsList.FirstOrDefault(c => c.Code == code);
+
+                if (validCodeDiscount != null)
                 {
                     couponBox.IsEnabled = false;
-                    discount = coupons[code];
+                    discount = validCodeDiscount.Discount;
                     totalPrice.Text = ShowTotalPrice();
                 }
                 else
