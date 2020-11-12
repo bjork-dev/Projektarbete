@@ -21,17 +21,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="..\Butik\Coupon.csv" Link="Coupon.csv">
+    <Content Include="..\Butik\store.csv" Link="store.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="..\Butik\store.csv" Link="store.csv" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Butik\Butik.csproj" />
   </ItemGroup>
 
 </Project>

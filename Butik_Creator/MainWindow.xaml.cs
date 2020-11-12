@@ -1,5 +1,4 @@
-﻿using Butik;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
@@ -23,8 +22,41 @@ namespace Butik_Creator
 {
     public class CodeDiscount
     {
-        public string Code;
-        public int Discount;
+        private string code;
+        private int discount;
+
+        public string Code
+        {
+            get
+            {
+                return code;
+            }
+            set
+            {
+                if (value.Length < 3 || value.Length > 20) throw new Exception("Code must be between 3 and 20 characters long.");
+
+                char[] letters = value.ToCharArray();
+                var wrongSymbols = letters.Where(l => !char.IsLetterOrDigit(l));
+                if (wrongSymbols.Any()) throw new Exception("Code must consist only of letters and numbers.");
+
+                code = value;
+            }
+        }
+        public int Discount
+        {
+            get
+            {
+                return discount;
+            }
+            set
+            {
+                if (value > 100 || value < 1)
+                {
+                    throw new Exception("Discount must be an integer from 1 to 100.");
+                }
+                discount = value;
+            }
+        }
     }
 
     public class Store
@@ -38,7 +70,8 @@ namespace Butik_Creator
     public partial class MainWindow : Window
     {
         private const string Path = @"C:\Windows\Temp\store.csv";
-        public const string CouponPath = @"C:\Windows\Temp\Coupon.csv";
+        public const string CouponLocalPath = "Coupon.csv";
+        public const string CouponGlobalPath = @"C:\Windows\Temp\" + CouponLocalPath;
         private List<string> assortItemsSave = new List<string>();
 
         private List<CodeDiscount>
@@ -53,7 +86,6 @@ namespace Butik_Creator
         TextBox discountTextBox;
         ListBox discountListBox;
         Button addButton, discardButton, saveChangesButton;
-        private Dictionary<string, int> coupons;
 
         ListBox assortmentListBox = new ListBox
         {
@@ -155,13 +187,8 @@ namespace Butik_Creator
             {
                 File.Copy("store.csv", Path);
             }
-
-            if (!File.Exists(CouponPath))
-            {
-                File.Copy("Coupon.csv", CouponPath);
-            }
-
-            LoadDiscounts(); // Load saved discounts from a file CouponPath (if it exists)
+            
+            LoadDiscounts(discountsList, discountsShow); // Load saved discounts from a file (if it exists)   
             LoadStore(); // Load saved store from a file store (if it exists)
         }
 
@@ -572,79 +599,82 @@ namespace Butik_Creator
         private void SaveChangesButton_Click(object sender, RoutedEventArgs e)
         {
             int indexSelected = discountListBox.SelectedIndex;
-            // Check that correct values are entered
-            int discount = IsDiscountCorrect(discountTextBox.Text);
-            int codeCheck = IsCodeCorrect(codeTextBox.Text);
 
-            switch (codeCheck)
+            int discount;
+            try
             {
-                // 
-                case 1 when discount > 0:
+                discount = int.Parse(discountTextBox.Text);
+                string code = codeTextBox.Text.ToLower();
+
+                List<CodeDiscount> copyDiscountsList = discountsList.Select(l => l).ToList();
+                copyDiscountsList.RemoveAt(indexSelected);
+
+                if (!IsDuplicate(code, copyDiscountsList)) // check whether this new code is already in the list
+                {
+                    try
                     {
-                        string code = codeTextBox.Text.ToLower();
-                        List<CodeDiscount> copyDiscountsList = discountsList.Select(l => l).ToList();
-                        copyDiscountsList.RemoveAt(indexSelected);
-                        var duplication = copyDiscountsList.Where(l => l.Code == code);
-
-                        if (!duplication.Any()) // check that there are no two identical codes
-                        {
-                            discountsList[indexSelected].Code = code;
-                            discountsList[indexSelected].Discount = discount;
-                            discountsShow[indexSelected] = code + "   " + discount + " %";
-                            codeTextBox.Clear();
-                            discountTextBox.Clear();
-                            discountListBox.SelectedIndex = -1;
-                            addButton.IsEnabled = true;
-                            saveChangesButton.IsEnabled = false;
-                            discardButton.IsEnabled = false;
-                            discountListBox.SelectedIndex = -1;
-
-                        }
-                        else MessageBox.Show("This code already exists");
-
-                        break;
+                        discountsList[indexSelected].Code = code;
+                        discountsList[indexSelected].Discount = discount;
+                        discountsShow[indexSelected] = code + "   " + discount + " %";
+                        codeTextBox.Clear();
+                        discountTextBox.Clear();
+                        discountListBox.SelectedIndex = -1;
+                        addButton.IsEnabled = true;
+                        saveChangesButton.IsEnabled = false;
+                        discardButton.IsEnabled = false;
+                        discountListBox.SelectedIndex = -1;
                     }
-                case -1:
-                    MessageBox.Show("Code must be at least 3 characters long.");
-                    break;
-                case -2:
-                    MessageBox.Show("Code must consist only of letters and numbers.");
-                    break;
-                default:
+                    catch (Exception ex)
                     {
-                        switch (discount)
-                        {
-                            case -1:
-                                MessageBox.Show("Discount must be an integer.");
-                                break;
-                            case -2:
-                                MessageBox.Show("Discount must be an integer from 1 to 100.");
-                                break;
-                        }
-
-                        break;
+                        MessageBox.Show(ex.Message);
                     }
+                }
+                else MessageBox.Show("This code already exists");
+            }
+            catch
+            {
+                MessageBox.Show("Discount must be an integer.");
             }
         }
 
-        // Load saved discounts from a file CouponPath (if it exists)
-        private void LoadDiscounts()
+        // Load saved discounts from a file at CouponPath. If it doesn´t exist, then load discounts from the local file Coupons.scv   
+        public static void LoadDiscounts(List<CodeDiscount> discountsList, ObservableCollection<string> discountsShow = null)
         {
-            if (!File.Exists(CouponPath)) return;
-            var lines = File.ReadAllLines(CouponPath).Select(a => a.Split(','));
+            string path;
+            if (File.Exists(CouponGlobalPath)) { path = CouponGlobalPath; }
+            else if (File.Exists(CouponLocalPath)) { path = CouponLocalPath; }
+            else return;
+
+            var lines = File.ReadAllLines(path).Select(a => a.Split(','));
             foreach (var item in lines)
             {
-                if (IsCodeCorrect(item[0]) == 1 && IsDiscountCorrect(item[1]) > 0
-                ) // check that values are correct otherwise skip them
+                try                                         // if code or discount is incorrect, skip it
                 {
-                    string code = item[0];
                     int discount = int.Parse(item[1]);
-                    discountsList.Add(new CodeDiscount { Code = code, Discount = discount });
-                    discountsShow.Add(code + "   " + discount + " %");
+                    string code = item[0].ToLower();
+
+                    if (!IsDuplicate(code, discountsList)) // check whether this code is already in the list
+                    {
+                        try
+                        {
+                            discountsList.Add(new CodeDiscount { Code = code, Discount = discount });
+                            if (discountsShow != null)
+                            {
+                                discountsShow.Add(code + "   " + discount + " %");
+                            }
+                        }
+                        catch { }
+                    }
                 }
+                catch { }
             }
         }
-
+        // Check whether this code is already in the list
+        public static bool IsDuplicate(string code, List<CodeDiscount> list)
+        {
+            var duplication = list.Where(l => l.Code == code);
+            return duplication.Any();
+        }
         private void LoadStore()
         {
             var p = new Store();
@@ -687,89 +717,39 @@ namespace Butik_Creator
         // Add new code
         private void AddCoupon(object sender, RoutedEventArgs e)
         {
-            // Check that correct values are entered
-            int discount = IsDiscountCorrect(discountTextBox.Text);
-            int codeCheck = IsCodeCorrect(codeTextBox.Text);
-
-            switch (codeCheck)
-            {
-                // code and discount are correct
-                case 1 when discount > 0:
-                    {
-                        string code = codeTextBox.Text.ToLower();
-                        var duplication = discountsList.Where(l => l.Code == code);
-
-                        if (!duplication.Any()) // check whether this code is already in the list
-                        {
-                            discountsList.Add(new CodeDiscount { Code = code, Discount = discount });
-                            discountsShow.Add(code + "   " + discount + " %");
-                            codeTextBox.Clear();
-                            discountTextBox.Clear();
-                        }
-                        else MessageBox.Show("This code already exists");
-
-                        break;
-                    }
-                case -1:
-                    MessageBox.Show("Code must be at least 3 characters long.");
-                    break;
-                case -2:
-                    MessageBox.Show("Code must consist only of letters and numbers.");
-                    break;
-                default:
-                    switch (discount)
-                    {
-                        case -1:
-                            MessageBox.Show("Discount must be an integer.");
-                            break;
-                        case -2:
-                            MessageBox.Show("Discount must be an integer from 1 to 100.");
-                            break;
-                    }
-
-                    break;
-            }
-        }
-
-        // Check that entered core is correct. Return 1 if code is correct, otherwise return an error code. 
-        private int IsCodeCorrect(string code)
-        {
-            if (code.Length < 3) return -1;
-
-            char[] letters = code.ToCharArray();
-            var wrongSymbols = letters.Where(l => !char.IsLetterOrDigit(l));
-
-            if (wrongSymbols.Any()) return -2;
-
-            return 1;
-        }
-
-        // Check that entered discount is correct. Return discount(int) if entered value is correct, otherwise return an error code. 
-        private int IsDiscountCorrect(string discountToCheck)
-        {
             int discount;
             try
             {
-                discount = int.Parse(discountToCheck);
+                discount = int.Parse(discountTextBox.Text);
+                string code = codeTextBox.Text.ToLower();
+
+                if (!IsDuplicate(code, discountsList)) // check whether this code is already in the list
+                {
+                    try
+                    {
+                        discountsList.Add(new CodeDiscount { Code = code, Discount = discount });
+                        discountsShow.Add(code + "   " + discount + " %");
+                        codeTextBox.Clear();
+                        discountTextBox.Clear();
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message);
+                    }
+                }
+                else MessageBox.Show("This code already exists");
             }
             catch
             {
-                return -1;
+                MessageBox.Show("Discount must be an integer.");
             }
-
-            if (discount > 100 || discount < 1)
-            {
-                return -2;
-            }
-
-            return discount;
         }
 
         private void SaveCoupon(object sender, RoutedEventArgs e)
         {
             //string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Coupon.csv"); //temporary path for testing
             List<string> temp = discountsList.Select(code => code.Code + "," + code.Discount).ToList();
-            File.WriteAllLines(CouponPath, temp);
+            File.WriteAllLines(CouponGlobalPath, temp);
             MessageBox.Show("File saved");
         }
 
