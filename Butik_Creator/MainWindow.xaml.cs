@@ -52,6 +52,7 @@ namespace Butik_Creator
         private string name;
         private string description;
         private string imageName;
+        private decimal price;
 
         public string Name
         {
@@ -67,16 +68,28 @@ namespace Butik_Creator
             }
         }
 
-        public decimal Price { get; set; }
+        public decimal Price
+        {
+            get => price;
+            set
+            {
+                if (value < 0 || value == 0)
+                {
+                    throw new Exception("Price cannot be 0 or less");
+                }
+
+                price = value;
+            }
+        }
 
         public string Description
         {
             get => description;
             set
             {
-                if (description == string.Empty)
+                if (value == string.Empty)
                 {
-                    throw new Exception("description cannot be null");
+                    throw new Exception("Description cannot be null");
 
                 }
 
@@ -728,7 +741,6 @@ namespace Butik_Creator
             var duplication = list.Where(l => l.Code == code);
             return duplication.Any();
         }
-
         private void LoadStore()
         {
             var p = new Store();
@@ -736,13 +748,13 @@ namespace Butik_Creator
             foreach (var item in File.ReadAllLines(Path).Select(a => a.Split(','))
             ) //Reads csv in order: name, price, description, image name
             {
-                p.Name = item[0];
-                p.Price = decimal.Parse(item[1]);
-                p.Description = item[2];
-                p.ImageName = item[3];
+                p.Name = item[0].Trim();
+                p.Price = decimal.Parse(item[1].Trim());
+                p.Description = item[2].Trim();
+                p.ImageName = item[3].Trim();
 
                 storeList.Add(new Store
-                    {Name = p.Name, Price = p.Price, Description = p.Description, ImageName = p.ImageName});
+                { Name = p.Name, Price = p.Price, Description = p.Description, ImageName = p.ImageName });
                 assortShow?.Add($"{p.Name} {p.Price}kr");
                 comparer.Add(p.Name.ToLower());
                 assortItemsSave.Add($"{p.Name},{p.Price},{p.Description},{p.ImageName}");
@@ -883,7 +895,7 @@ namespace Butik_Creator
                 descriptionTextBox.Text = storeList[assortmentListBox.SelectedIndex].Description;
                 imageBox.Text = storeList[assortmentListBox.SelectedIndex].ImageName;
                 assortSaveChangesButton.IsEnabled = true;
-                saveChangesButton.IsEnabled = true;
+                assortSaveChangesButton.IsEnabled = true;
                 assortRemoveButton.IsEnabled = true;
             }
         }
@@ -901,28 +913,46 @@ namespace Butik_Creator
                 List<Store> copyStoreList = storeList.Select(l => l).ToList();
                 copyStoreList.RemoveAt(indexSelected);
 
-                try //Send help
+                for (int i = 0; i < storeList.Count; i++) 
                 {
-                    storeList[indexSelected].Name = name;
-                    storeList[indexSelected].Price = decimal.Parse(price);
-                    storeList[indexSelected].Description = description;
-                    storeList[indexSelected].ImageName = imageName;
-                    assortShow[indexSelected] = $"{name} {price}kr";
-                    codeTextBox.Clear();
-                    discountTextBox.Clear();
-                    discountListBox.SelectedIndex = -1;
-                    addButton.IsEnabled = true;
-                    assortSaveChangesButton.IsEnabled = false;
-                    assortRemoveButton.IsEnabled = false;
-                    comparer.RemoveAt(indexSelected);
-                    comparer.Insert(indexSelected, name);
-                    assortItemsSave.Insert(indexSelected,$"{name},{price},{description},{imageName}" );
-                    assortItemsSave.RemoveAt(indexSelected + 1);
+                    if (assortShow[i].Contains(name)) // TODO not finished
+                    {
+                        return;
+                    }
                 }
-                catch (Exception ex)
                 {
-                    MessageBox.Show(ex.Message);
+                    try // Select the property from selected index
+                    {
+
+                        storeList[indexSelected].Name = name;
+                        storeList[indexSelected].Price = decimal.Parse(price);
+                        storeList[indexSelected].Description = description;
+                        storeList[indexSelected].ImageName = imageName;
+                        assortShow[indexSelected] = $"{name} {price}kr";
+
+                        //Clear textboxes and enable / disable buttons
+                        nameTextBox.Clear();
+                        priceTextBox.Clear();
+                        descriptionTextBox.Clear();
+                        discountListBox.SelectedIndex = -1;
+                        assortAddButton.IsEnabled = true;
+                        assortSaveChangesButton.IsEnabled = false;
+                        assortRemoveButton.IsEnabled = false;
+
+                        //Remove previous entry and replace with new
+                        comparer.RemoveAt(indexSelected);
+                        comparer.Insert(indexSelected, name);
+                        assortItemsSave.Insert(indexSelected, $"{name},{price},{description},{imageName}");
+                        assortItemsSave.RemoveAt(indexSelected + 1);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message);
+                    }
                 }
+               
+
+
 
 
             }
@@ -931,7 +961,7 @@ namespace Butik_Creator
                 // ignored
             }
         }
-        private void AssortRemove(object sender, RoutedEventArgs e)
+        private void AssortRemove(object sender, RoutedEventArgs e) //Removes at the selected index from the lists and clears the textboxes
         {
             int indexSelected = assortmentListBox.SelectedIndex;
             assortRemoveButton.IsEnabled = false;
