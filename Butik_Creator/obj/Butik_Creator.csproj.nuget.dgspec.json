@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\nissi\\Source\\Repos\\bjork-dev\\Projektarbete\\Butik_Creator\\Butik_Creator.csproj": {}
+    "C:\\Users\\liamb\\Source\\Repos\\Projektarbete\\Butik_Creator\\Butik_Creator.csproj": {}
   },
   "projects": {
-    "C:\\Users\\nissi\\Source\\Repos\\bjork-dev\\Projektarbete\\Butik\\Butik.csproj": {
+    "C:\\Users\\liamb\\Source\\Repos\\Projektarbete\\Butik_Creator\\Butik_Creator.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\nissi\\Source\\Repos\\bjork-dev\\Projektarbete\\Butik\\Butik.csproj",
-        "projectName": "Butik",
-        "projectPath": "C:\\Users\\nissi\\Source\\Repos\\bjork-dev\\Projektarbete\\Butik\\Butik.csproj",
-        "packagesPath": "C:\\Users\\nissi\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\nissi\\Source\\Repos\\bjork-dev\\Projektarbete\\Butik\\obj\\",
+        "projectUniqueName": "C:\\Users\\liamb\\Source\\Repos\\Projektarbete\\Butik_Creator\\Butik_Creator.csproj",
+        "projectName": "Butik_Creator",
+        "projectPath": "C:\\Users\\liamb\\Source\\Repos\\Projektarbete\\Butik_Creator\\Butik_Creator.csproj",
+        "packagesPath": "C:\\Users\\liamb\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\liamb\\Source\\Repos\\Projektarbete\\Butik_Creator\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\nissi\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\liamb\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -55,66 +55,7 @@
               "privateAssets": "none"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.101\\RuntimeIdentifierGraph.json"
-        }
-      }
-    },
-    "C:\\Users\\nissi\\Source\\Repos\\bjork-dev\\Projektarbete\\Butik_Creator\\Butik_Creator.csproj": {
-      "version": "1.0.0",
-      "restore": {
-        "projectUniqueName": "C:\\Users\\nissi\\Source\\Repos\\bjork-dev\\Projektarbete\\Butik_Creator\\Butik_Creator.csproj",
-        "projectName": "Butik_Creator",
-        "projectPath": "C:\\Users\\nissi\\Source\\Repos\\bjork-dev\\Projektarbete\\Butik_Creator\\Butik_Creator.csproj",
-        "packagesPath": "C:\\Users\\nissi\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\nissi\\Source\\Repos\\bjork-dev\\Projektarbete\\Butik_Creator\\obj\\",
-        "projectStyle": "PackageReference",
-        "configFilePaths": [
-          "C:\\Users\\nissi\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
-        ],
-        "originalTargetFrameworks": [
-          "netcoreapp3.1"
-        ],
-        "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "https://api.nuget.org/v3/index.json": {}
-        },
-        "frameworks": {
-          "netcoreapp3.1": {
-            "projectReferences": {
-              "C:\\Users\\nissi\\Source\\Repos\\bjork-dev\\Projektarbete\\Butik\\Butik.csproj": {
-                "projectPath": "C:\\Users\\nissi\\Source\\Repos\\bjork-dev\\Projektarbete\\Butik\\Butik.csproj"
-              }
-            }
-          }
-        },
-        "warningProperties": {
-          "warnAsError": [
-            "NU1605"
-          ]
-        }
-      },
-      "frameworks": {
-        "netcoreapp3.1": {
-          "imports": [
-            "net461",
-            "net462",
-            "net47",
-            "net471",
-            "net472",
-            "net48"
-          ],
-          "assetTargetFallback": true,
-          "warn": true,
-          "frameworkReferences": {
-            "Microsoft.NETCore.App": {
-              "privateAssets": "all"
-            },
-            "Microsoft.WindowsDesktop.App.WPF": {
-              "privateAssets": "none"
-            }
-          },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.101\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.403\\RuntimeIdentifierGraph.json"
         }
       }
     }

@@ -24,7 +24,7 @@ namespace Butik
         //Global variables
         private const string SavedCartPath = @"C:\Windows\Temp\cart.csv";
         private const string Path = @"C:\Windows\Temp\store.csv";
-        private const string CouponPath = "Coupon.csv";
+        public const string CouponPath = "Coupon.csv";
         private readonly ListBox CartBody = new ListBox { Margin = new Thickness(5), MaxHeight = 335 };
         internal decimal sumTotal;
         internal decimal sumWithoutDiscount;

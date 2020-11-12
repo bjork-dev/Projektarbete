@@ -1,22 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Data;
-using System.Diagnostics.Eventing.Reader;
+using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using Path = System.IO.Path;
 
 namespace Butik_Creator
 {
@@ -27,13 +18,11 @@ namespace Butik_Creator
 
         public string Code
         {
-            get
-            {
-                return code;
-            }
+            get => code;
             set
             {
-                if (value.Length < 3 || value.Length > 20) throw new Exception("Code must be between 3 and 20 characters long.");
+                if (value.Length < 3 || value.Length > 20)
+                    throw new Exception("Code must be between 3 and 20 characters long.");
 
                 char[] letters = value.ToCharArray();
                 var wrongSymbols = letters.Where(l => !char.IsLetterOrDigit(l));
@@ -42,18 +31,17 @@ namespace Butik_Creator
                 code = value;
             }
         }
+
         public int Discount
         {
-            get
-            {
-                return discount;
-            }
+            get => discount;
             set
             {
                 if (value > 100 || value < 1)
                 {
                     throw new Exception("Discount must be an integer from 1 to 100.");
                 }
+
                 discount = value;
             }
         }
@@ -61,10 +49,54 @@ namespace Butik_Creator
 
     public class Store
     {
-        public string Name;
-        public decimal Price;
-        public string Description;
-        public string ImageName;
+        private string name;
+        private string description;
+        private string imageName;
+
+        public string Name
+        {
+            get => name;
+            set
+            {
+                if (value == string.Empty)
+                {
+                    throw new Exception("Name cannot be null");
+                }
+
+                name = value;
+            }
+        }
+
+        public decimal Price { get; set; }
+
+        public string Description
+        {
+            get => description;
+            set
+            {
+                if (description == string.Empty)
+                {
+                    throw new Exception("description cannot be null");
+
+                }
+
+                description = value;
+            }
+        }
+
+        public string ImageName
+        {
+            get => imageName;
+            set
+            {
+                if (imageName == string.Empty)
+                {
+                    throw new Exception("Image name cannot be null");
+                }
+
+                imageName = value;
+            }
+        }
     }
 
     public partial class MainWindow : Window
@@ -73,6 +105,9 @@ namespace Butik_Creator
         public const string CouponLocalPath = "Coupon.csv";
         public const string CouponGlobalPath = @"C:\Windows\Temp\" + CouponLocalPath;
         private List<string> assortItemsSave = new List<string>();
+        private List<string> comparer = new List<string>();
+
+        private List<Store> storeList = new List<Store>();
 
         private List<CodeDiscount>
             discountsList =
@@ -80,7 +115,10 @@ namespace Butik_Creator
 
         private ObservableCollection<string>
             discountsShow =
-                new ObservableCollection<string>(); // List for displaying valid codes and discounts ("code   discount %")
+                new ObservableCollection<string>();// List for displaying valid codes and discounts ("code   discount %")
+        private ObservableCollection<string>
+            assortShow =
+                new ObservableCollection<string>();
 
         TextBox codeTextBox;
         TextBox discountTextBox;
@@ -107,6 +145,7 @@ namespace Butik_Creator
         {
             Margin = new Thickness(5)
         };
+
         ComboBox imageBox = new ComboBox()
         {
             Text = "Select image",
@@ -118,6 +157,34 @@ namespace Butik_Creator
             Height = 25,
             // Stretch = Stretch.Uniform
         };
+
+        Button assortSaveChangesButton = new Button
+        {
+            Content = "Save changes",
+            Margin = new Thickness(5),
+            FontSize = 12,
+            Padding = new Thickness(5),
+            IsEnabled = false
+        };
+
+        Button assortRemoveButton = new Button
+        {
+            Content = "Remove",
+            Margin = new Thickness(5),
+            FontSize = 12,
+            Padding = new Thickness(5),
+            IsEnabled = false
+        };
+
+        Button assortAddButton = new Button
+        {
+            Content = "Add new",
+            Margin = new Thickness(5),
+            FontSize = 12,
+            Padding = new Thickness(5),
+            IsEnabled = true
+        };
+
         public MainWindow()
         {
             InitializeComponent();
@@ -183,11 +250,16 @@ namespace Butik_Creator
             Grid.SetRow(discountPanel, 1);
             Grid.SetColumn(discountPanel, 1);
 
-            if (!File.Exists(Path))
+            if (!File.Exists(Path)) //Copy store file from project if it does not exist in Temp
             {
                 File.Copy("store.csv", Path);
             }
-            
+
+            if (!File.Exists(CouponGlobalPath)) //Copy coupon file from project if it does not exist in Temp
+            {
+                File.Copy("Coupon.csv", CouponGlobalPath);
+            }
+
             LoadDiscounts(discountsList, discountsShow); // Load saved discounts from a file (if it exists)   
             LoadStore(); // Load saved store from a file store (if it exists)
         }
@@ -210,6 +282,7 @@ namespace Butik_Creator
             assortmentGrid.Children.Add(assortmentListBox);
             Grid.SetColumn(assortmentListBox, 0);
             Grid.SetRow(assortmentListBox, 0);
+            assortmentListBox.ItemsSource = assortShow;
 
             Button assortRemoveAll = new Button
             {
@@ -240,35 +313,6 @@ namespace Butik_Creator
             Grid.SetColumn(bildGallery, 0);
             Grid.SetRow(bildGallery, 3);
             Grid.SetColumnSpan(bildGallery, 2);
-
-            for (int i = 0; i < 5; i++)
-            {
-                Image testImage = new Image
-                {
-                    Source = new BitmapImage(new Uri(@"Images\lundgrens.jpg", UriKind.Relative)),
-                    HorizontalAlignment = HorizontalAlignment.Center,
-                    VerticalAlignment = VerticalAlignment.Center,
-                    Margin = new Thickness(5),
-                    Width = 80,
-                    Height = 80,
-                    Stretch = Stretch.Uniform
-                };
-                RenderOptions.SetBitmapScalingMode(testImage, BitmapScalingMode.HighQuality);
-                bildGallery.Children.Add(testImage);
-
-                Image testImage3 = new Image
-                {
-                    Source = new BitmapImage(new Uri(@"Images\siberia.png", UriKind.Relative)),
-                    HorizontalAlignment = HorizontalAlignment.Center,
-                    VerticalAlignment = VerticalAlignment.Center,
-                    Margin = new Thickness(5),
-                    Width = 80,
-                    Height = 80,
-                    Stretch = Stretch.Uniform
-                };
-                RenderOptions.SetBitmapScalingMode(testImage3, BitmapScalingMode.HighQuality);
-                bildGallery.Children.Add(testImage3);
-            }
 
             Grid nestedGrid = new Grid
             {
@@ -343,65 +387,66 @@ namespace Butik_Creator
             Grid.SetRowSpan(imageBox, 3);
 
             var dir = Directory.GetCurrentDirectory();
-            foreach (var item in Directory.GetFiles($@"{dir}\Images"))
+            foreach (var item in Directory.GetFiles($@"{dir}\Images")
+            ) //Gets all files in the image folder and then extracts the image filename
             {
                 string[] arr = item.Split('\\');
                 var lastItem = arr.Last();
                 imageBox.Items.Add(lastItem);
+
+                Image testImage = new Image //Adds an image per file in the image folder
+                {
+                    Source = new BitmapImage(new Uri(@$"Images\{lastItem}", UriKind.Relative)),
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    VerticalAlignment = VerticalAlignment.Center,
+                    Margin = new Thickness(5),
+                    Width = 80,
+                    Height = 80,
+                    Stretch = Stretch.Uniform
+                };
+                RenderOptions.SetBitmapScalingMode(testImage, BitmapScalingMode.HighQuality);
+                bildGallery.Children.Add(testImage);
+
+                Label imageLabel = new Label //To describe the filenames of the images
+                {
+                    Content = lastItem,
+                    Margin = new Thickness(5),
+                    HorizontalContentAlignment = HorizontalAlignment.Center
+
+                };
+                bildGallery.Children.Add(imageLabel);
             }
 
+            Grid.SetRow(assortSaveChangesButton, 3);
+            Grid.SetColumn(assortSaveChangesButton, 1);
+            nestedGrid.Children.Add(assortSaveChangesButton);
+            assortSaveChangesButton.Click += AssortSaveChanges;
 
 
-            Button saveChangesButton = new Button
-            {
-                Content = "Save changes",
-                Margin = new Thickness(5),
-                FontSize = 12,
-                Padding = new Thickness(5),
-                IsEnabled = false
-            };
-            Grid.SetRow(saveChangesButton, 3);
-            Grid.SetColumn(saveChangesButton, 1);
-            nestedGrid.Children.Add(saveChangesButton);
+            Grid.SetRow(assortRemoveButton, 3);
+            Grid.SetColumn(assortRemoveButton, 2);
+            nestedGrid.Children.Add(assortRemoveButton);
+            assortRemoveButton.Click += AssortRemove;
 
-            Button removeButton = new Button
-            {
-                Content = "Remove",
-                Margin = new Thickness(5),
-                FontSize = 12,
-                Padding = new Thickness(5),
-                IsEnabled = false
-            };
-            Grid.SetRow(removeButton, 3);
-            Grid.SetColumn(removeButton, 2);
-            nestedGrid.Children.Add(removeButton);
+            Grid.SetRow(assortAddButton, 4);
+            Grid.SetColumn(assortAddButton, 1);
+            nestedGrid.Children.Add(assortAddButton);
+            Grid.SetColumnSpan(assortAddButton, 2);
+            assortAddButton.Click += AddAssortment;
 
-            Button addButton = new Button
-            {
-                Content = "Add new",
-                Margin = new Thickness(5),
-                FontSize = 12,
-                Padding = new Thickness(5),
-                IsEnabled = true
-            };
-            Grid.SetRow(addButton, 4);
-            Grid.SetColumn(addButton, 1);
-            nestedGrid.Children.Add(addButton);
-            Grid.SetColumnSpan(addButton, 2);
-            addButton.Click += AddAssortment;
-
-            Button saveButton = new Button
+            Button assortSaveButton = new Button
             {
                 Content = "Save to file",
                 Margin = new Thickness(90, 5, 150, 5),
                 FontSize = 12,
                 Padding = new Thickness(5),
             };
-            Grid.SetRow(saveButton, 1);
-            Grid.SetColumn(saveButton, 2);
-            assortmentGrid.Children.Add(saveButton);
-            saveButton.Click += SaveAssortment;
+            Grid.SetRow(assortSaveButton, 1);
+            Grid.SetColumn(assortSaveButton, 2);
+            assortmentGrid.Children.Add(assortSaveButton);
+            assortSaveButton.Click += SaveAssortment;
 
+            assortmentListBox.SelectionChanged += AssortmentListBox_SelectionChanged;
             return assortmentGrid;
         }
 
@@ -600,10 +645,9 @@ namespace Butik_Creator
         {
             int indexSelected = discountListBox.SelectedIndex;
 
-            int discount;
             try
             {
-                discount = int.Parse(discountTextBox.Text);
+                var discount = int.Parse(discountTextBox.Text);
                 string code = codeTextBox.Text.ToLower();
 
                 List<CodeDiscount> copyDiscountsList = discountsList.Select(l => l).ToList();
@@ -638,43 +682,53 @@ namespace Butik_Creator
         }
 
         // Load saved discounts from a file at CouponPath. If it doesn´t exist, then load discounts from the local file Coupons.scv   
-        public static void LoadDiscounts(List<CodeDiscount> discountsList, ObservableCollection<string> discountsShow = null)
+        public static void LoadDiscounts(List<CodeDiscount> discountsList,
+            ObservableCollection<string> discountsShow = null)
         {
             string path;
-            if (File.Exists(CouponGlobalPath)) { path = CouponGlobalPath; }
-            else if (File.Exists(CouponLocalPath)) { path = CouponLocalPath; }
+            if (File.Exists(CouponGlobalPath))
+            {
+                path = CouponGlobalPath;
+            }
+            else if (File.Exists(CouponLocalPath))
+            {
+                path = CouponLocalPath;
+            }
             else return;
 
             var lines = File.ReadAllLines(path).Select(a => a.Split(','));
             foreach (var item in lines)
             {
-                try                                         // if code or discount is incorrect, skip it
+                try // if code or discount is incorrect, skip it
                 {
                     int discount = int.Parse(item[1]);
                     string code = item[0].ToLower();
 
-                    if (!IsDuplicate(code, discountsList)) // check whether this code is already in the list
+                    if (IsDuplicate(code, discountsList)) continue;
+                    try
                     {
-                        try
-                        {
-                            discountsList.Add(new CodeDiscount { Code = code, Discount = discount });
-                            if (discountsShow != null)
-                            {
-                                discountsShow.Add(code + "   " + discount + " %");
-                            }
-                        }
-                        catch { }
+                        discountsList.Add(new CodeDiscount { Code = code, Discount = discount });
+                        discountsShow?.Add(code + "   " + discount + " %");
+                    }
+                    catch
+                    {
+                        // ignored
                     }
                 }
-                catch { }
+                catch
+                {
+                    // ignored
+                }
             }
         }
+
         // Check whether this code is already in the list
         public static bool IsDuplicate(string code, List<CodeDiscount> list)
         {
             var duplication = list.Where(l => l.Code == code);
             return duplication.Any();
         }
+
         private void LoadStore()
         {
             var p = new Store();
@@ -686,7 +740,12 @@ namespace Butik_Creator
                 p.Price = decimal.Parse(item[1]);
                 p.Description = item[2];
                 p.ImageName = item[3];
-                assortmentListBox.Items.Add($"{p.Name} {p.Price}kr");
+
+                storeList.Add(new Store
+                    {Name = p.Name, Price = p.Price, Description = p.Description, ImageName = p.ImageName});
+                assortShow?.Add($"{p.Name} {p.Price}kr");
+                comparer.Add(p.Name.ToLower());
+                assortItemsSave.Add($"{p.Name},{p.Price},{p.Description},{p.ImageName}");
             }
         }
 
@@ -717,10 +776,9 @@ namespace Butik_Creator
         // Add new code
         private void AddCoupon(object sender, RoutedEventArgs e)
         {
-            int discount;
             try
             {
-                discount = int.Parse(discountTextBox.Text);
+                var discount = int.Parse(discountTextBox.Text);
                 string code = codeTextBox.Text.ToLower();
 
                 if (!IsDuplicate(code, discountsList)) // check whether this code is already in the list
@@ -759,23 +817,47 @@ namespace Butik_Creator
             const string message = "Would you like to remove all items from the store file?";
             var result = MessageBox.Show(message, "Remove all", MessageBoxButton.YesNo);
             if (result != MessageBoxResult.Yes) return;
-            assortmentListBox.Items.Clear();
+            assortShow.Clear();
             File.Create(Path);
         }
 
         private void AddAssortment(object sender, RoutedEventArgs e)
         {
-            var s = new Store
+            try
             {
-                Name = nameTextBox.Text,
-                Price = decimal.Parse(priceTextBox.Text),
-                Description = descriptionTextBox.Text,
-                ImageName = imageBox.SelectionBoxItem.ToString()
-            };
+                var s = new Store
+                {
+                    Name = nameTextBox.Text,
+                    Price = decimal.Parse(priceTextBox.Text),
+                    Description = descriptionTextBox.Text,
+                    ImageName = imageBox.SelectionBoxItem.ToString()
+                };
 
+                for (int i = 0; i < assortmentListBox.Items.Count; i++)
+                {
+                    if (!comparer.Contains(s.Name)) continue;
+                    MessageBox.Show("Product already exists.");
+                    return;
+                }
 
-            assortmentListBox.Items.Add($"{s.Name} {s.Price}kr");
-            assortItemsSave.Add($"{s.Name},{s.Price},{s.Description},{s.ImageName}");
+                if (s.ImageName == string.Empty)
+                {
+                    MessageBox.Show("Please select an image");
+                }
+                else
+                {
+                    assortShow.Add($"{s.Name} {s.Price}kr");
+                    assortItemsSave.Add($"{s.Name},{s.Price},{s.Description},{s.ImageName}");
+                    comparer.Add(s.Name);
+                    storeList.Add(new Store()
+                    { Name = s.Name, Price = s.Price, Description = s.Description, ImageName = s.ImageName });
+                }
+
+            }
+            catch (Exception a)
+            {
+                MessageBox.Show(a.Message);
+            }
         }
 
         private void SaveAssortment(object sender, RoutedEventArgs e)
@@ -786,11 +868,82 @@ namespace Butik_Creator
             }
             else
             {
-                File.AppendAllLines(Path, assortItemsSave);
-                assortItemsSave.Clear();
+                File.WriteAllLines(Path, assortItemsSave);
             }
 
         }
 
+        private void AssortmentListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (assortmentListBox.SelectedIndex != -1)
+            {
+                nameTextBox.Text = storeList[assortmentListBox.SelectedIndex].Name;
+                priceTextBox.Text = storeList[assortmentListBox.SelectedIndex].Price
+                    .ToString(CultureInfo.InvariantCulture);
+                descriptionTextBox.Text = storeList[assortmentListBox.SelectedIndex].Description;
+                imageBox.Text = storeList[assortmentListBox.SelectedIndex].ImageName;
+                assortSaveChangesButton.IsEnabled = true;
+                saveChangesButton.IsEnabled = true;
+                assortRemoveButton.IsEnabled = true;
+            }
+        }
+        private void AssortSaveChanges(object sender, RoutedEventArgs e)
+        {
+            int indexSelected = assortmentListBox.SelectedIndex;
+
+            try
+            {
+                var name = nameTextBox.Text;
+                var price = priceTextBox.Text;
+                var description = descriptionTextBox.Text;
+                var imageName = imageBox.Text;
+
+                List<Store> copyStoreList = storeList.Select(l => l).ToList();
+                copyStoreList.RemoveAt(indexSelected);
+
+                try //Send help
+                {
+                    storeList[indexSelected].Name = name;
+                    storeList[indexSelected].Price = decimal.Parse(price);
+                    storeList[indexSelected].Description = description;
+                    storeList[indexSelected].ImageName = imageName;
+                    assortShow[indexSelected] = $"{name} {price}kr";
+                    codeTextBox.Clear();
+                    discountTextBox.Clear();
+                    discountListBox.SelectedIndex = -1;
+                    addButton.IsEnabled = true;
+                    assortSaveChangesButton.IsEnabled = false;
+                    assortRemoveButton.IsEnabled = false;
+                    comparer.RemoveAt(indexSelected);
+                    comparer.Insert(indexSelected, name);
+                    assortItemsSave.Insert(indexSelected,$"{name},{price},{description},{imageName}" );
+                    assortItemsSave.RemoveAt(indexSelected + 1);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+
+
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
+        }
+        private void AssortRemove(object sender, RoutedEventArgs e)
+        {
+            int indexSelected = assortmentListBox.SelectedIndex;
+            assortRemoveButton.IsEnabled = false;
+            assortSaveChangesButton.IsEnabled = false;
+            assortAddButton.IsEnabled = true;
+            nameTextBox.Clear();
+            priceTextBox.Clear();
+            descriptionTextBox.Clear();
+            discountListBox.SelectedIndex = -1;
+            assortShow.RemoveAt(indexSelected);
+            comparer.RemoveAt(indexSelected);
+            assortItemsSave.RemoveAt(indexSelected);
+        }
     }
 }
