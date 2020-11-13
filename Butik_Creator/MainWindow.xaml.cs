@@ -9,10 +9,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+
 namespace Butik_Creator
 {
-
-
     public partial class MainWindow : Window
     {
         private const string Path = @"C:\Windows\Temp\store.csv";
@@ -657,7 +656,6 @@ namespace Butik_Creator
 
         private void SaveCoupon(object sender, RoutedEventArgs e)
         {
-            //string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Coupon.csv"); //temporary path for testing
             List<string> temp = discountsList.Select(code => code.Code + "," + code.Discount).ToList();
             File.WriteAllLines(Butik.MainWindow.CouponGlobalPath, temp);
             MessageBox.Show("File saved");
@@ -670,7 +668,14 @@ namespace Butik_Creator
             var result = MessageBox.Show(message, "Remove all", MessageBoxButton.YesNo);
             if (result != MessageBoxResult.Yes) return;
             assortShow.Clear();
-            File.Create(Path);
+            //File.Create(Path);
+            assortItemsSave.Clear();
+            comparer.Clear();
+            storeList.Clear();
+            nameTextBox.Clear();
+            descriptionTextBox.Clear();
+            priceTextBox.Clear();
+            imageBox.SelectedIndex = -1;
         }
 
         private void AddAssortment(object sender, RoutedEventArgs e)
@@ -687,7 +692,7 @@ namespace Butik_Creator
 
                 for (int i = 0; i < assortmentListBox.Items.Count; i++)
                 {
-                    if (!comparer.Contains(s.Name)) continue;
+                    if (!comparer.Contains(s.Name.ToLower())) continue;
                     MessageBox.Show("Product already exists.");
                     return;
                 }
@@ -700,7 +705,7 @@ namespace Butik_Creator
                 {
                     assortShow.Add($"{s.Name} {s.Price}kr");
                     assortItemsSave.Add($"{s.Name},{s.Price},{s.Description},{s.ImageName}");
-                    comparer.Add(s.Name);
+                    comparer.Add(s.Name.ToLower());
                     storeList.Add(new Store()
                     { Name = s.Name, Price = s.Price, Description = s.Description, ImageName = s.ImageName });
                     assortmentListBox.SelectedIndex = -1;
@@ -782,7 +787,7 @@ namespace Butik_Creator
 
                             //Remove previous entry and replace with new
                             comparer.RemoveAt(indexSelected);
-                            comparer.Insert(indexSelected, name);
+                            comparer.Insert(indexSelected, name.ToLower());
                             assortItemsSave.Insert(indexSelected, $"{name},{price},{description},{imageName}");
                             assortItemsSave.RemoveAt(indexSelected + 1);
                         }
@@ -811,6 +816,8 @@ namespace Butik_Creator
             assortShow.RemoveAt(indexSelected);
             comparer.RemoveAt(indexSelected);
             assortItemsSave.RemoveAt(indexSelected);
+            storeList.RemoveAt(indexSelected);
+            imageBox.SelectedIndex = -1;
         }
         public static bool AddImages(string dir) //Adds images from the current project image folder
         {
