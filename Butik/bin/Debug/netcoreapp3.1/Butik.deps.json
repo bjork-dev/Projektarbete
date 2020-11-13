@@ -7,14 +7,27 @@
   "targets": {
     ".NETCoreApp,Version=v3.1": {
       "Butik/1.0.0": {
+        "dependencies": {
+          "Butik_Creator": "1.0.0"
+        },
         "runtime": {
           "Butik.dll": {}
+        }
+      },
+      "Butik_Creator/1.0.0": {
+        "runtime": {
+          "Butik_Creator.dll": {}
         }
       }
     }
   },
   "libraries": {
     "Butik/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Butik_Creator/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

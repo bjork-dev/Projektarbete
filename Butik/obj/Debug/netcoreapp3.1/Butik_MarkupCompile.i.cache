@@ -1,20 +1,20 @@
 ﻿Butik
-
+1.0.0.0
 
 winexe
 C#
 .cs
-C:\Users\nissi\Source\Repos\bjork-dev\Projektarbete\Butik\obj\Debug\netcoreapp3.1\
+C:\Users\empir\Source\Repos\Projektarbete11\Butik\obj\Debug\netcoreapp3.1\
 Butik
 none
 false
 TRACE;DEBUG;NETCOREAPP;NETCOREAPP3_1
-C:\Users\nissi\Source\Repos\bjork-dev\Projektarbete\Butik\App.xaml
+C:\Users\empir\Source\Repos\Projektarbete11\Butik\App.xaml
 11151548125
 41939028220
-42031213584
-193-250081285
+5671004357
+193-2115890495
 MainWindow.xaml;
 
-False
+True
 
