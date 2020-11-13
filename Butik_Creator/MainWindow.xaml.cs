@@ -1,4 +1,5 @@
-﻿using System;
+using Butik;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
@@ -11,42 +12,6 @@ using System.Windows.Media.Imaging;
 
 namespace Butik_Creator
 {
-    public class CodeDiscount
-    {
-        private string code;
-        private int discount;
-
-        public string Code
-        {
-            get => code;
-            set
-            {
-                if (value.Length < 3 || value.Length > 20)
-                    throw new Exception("Code must be between 3 and 20 characters long.");
-
-                char[] letters = value.ToCharArray();
-                var wrongSymbols = letters.Where(l => !char.IsLetterOrDigit(l));
-                if (wrongSymbols.Any()) throw new Exception("Code must consist only of letters and numbers.");
-
-                code = value;
-            }
-        }
-
-        public int Discount
-        {
-            get => discount;
-            set
-            {
-                if (value > 100 || value < 1)
-                {
-                    throw new Exception("Discount must be an integer from 1 to 100.");
-                }
-
-                discount = value;
-            }
-        }
-    }
-
     public class Store
     {
         private string name;
@@ -115,16 +80,14 @@ namespace Butik_Creator
     public partial class MainWindow : Window
     {
         private const string Path = @"C:\Windows\Temp\store.csv";
-        public const string CouponLocalPath = "Coupon.csv";
-        public const string CouponGlobalPath = @"C:\Windows\Temp\" + CouponLocalPath;
         private static List<string> assortItemsSave = new List<string>();
         private static List<string> comparer = new List<string>();
 
         private static List<Store> storeList = new List<Store>();
 
-        private List<CodeDiscount>
+        private List<Butik.CodeDiscount>
             discountsList =
-                new List<CodeDiscount>(); // List with valid codes and discounts (string "code", int discount)
+                new List<Butik.CodeDiscount>(); // List with valid codes and discounts (string "code", int discount)
 
         private ObservableCollection<string>
             discountsShow =
@@ -268,12 +231,12 @@ namespace Butik_Creator
                 File.Copy("store.csv", Path);
             }
 
-            if (!File.Exists(CouponGlobalPath)) //Copy coupon file from project if it does not exist in Temp
+            if (!File.Exists(Butik.MainWindow.CouponGlobalPath)) //Copy coupon file from project if it does not exist in Temp
             {
-                File.Copy("Coupon.csv", CouponGlobalPath);
+                File.Copy("Coupon.csv", Butik.MainWindow.CouponGlobalPath);
             }
 
-            LoadDiscounts(discountsList, discountsShow); // Load saved discounts from a file (if it exists)   
+            Butik.MainWindow.LoadDiscounts(discountsList, Butik.MainWindow.CouponGlobalPath, discountsShow); // Load saved discounts   
             LoadStoreCsv(Path, storeList); // Load saved store from a file store (if it exists)
         }
 
@@ -673,10 +636,10 @@ namespace Butik_Creator
                 var discount = int.Parse(discountTextBox.Text);
                 string code = codeTextBox.Text.ToLower();
 
-                List<CodeDiscount> copyDiscountsList = discountsList.Select(l => l).ToList();
+                List<Butik.CodeDiscount> copyDiscountsList = discountsList.Select(l => l).ToList();
                 copyDiscountsList.RemoveAt(indexSelected);
 
-                if (!IsDuplicate(code, copyDiscountsList)) // check whether this new code is already in the list
+                if (!Butik.MainWindow.IsDuplicate(code, copyDiscountsList)) // check whether this new code is already in the list
                 {
                     try
                     {
@@ -704,52 +667,6 @@ namespace Butik_Creator
             }
         }
 
-        // Load saved discounts from a file at CouponPath. If it doesn´t exist, then load discounts from the local file Coupons.scv   
-        public static void LoadDiscounts(List<CodeDiscount> discountsList,
-            ObservableCollection<string> discountsShow = null)
-        {
-            string path;
-            if (File.Exists(CouponGlobalPath))
-            {
-                path = CouponGlobalPath;
-            }
-            else if (File.Exists(CouponLocalPath))
-            {
-                path = CouponLocalPath;
-            }
-            else return;
-
-            foreach (var item in File.ReadAllLines(path).Select(a => a.Split(',')))
-            {
-                try // if code or discount is incorrect, skip it
-                {
-                    int discount = int.Parse(item[1]);
-                    string code = item[0].ToLower();
-
-                    if (IsDuplicate(code, discountsList)) continue;
-                    try
-                    {
-                        discountsList.Add(new CodeDiscount { Code = code, Discount = discount });
-                        discountsShow?.Add(code + "   " + discount + " %");
-                    }
-                    catch
-                    {
-                        // ignored
-                    }
-                }
-                catch
-                {
-                    // ignored
-                }
-            }
-        }
-
-        // Check whether this code is already in the list
-        public static bool IsDuplicate(string code, List<CodeDiscount> list)
-        {
-            var duplication = list.Where(l => l.Code == code);
-            return duplication.Any();
-        }
         public static bool AssortIsDuplicate(string name, List<Store> list)
         {
             var duplication = list.Where(l => l.Name == name);
@@ -808,11 +725,11 @@ namespace Butik_Creator
                 var discount = int.Parse(discountTextBox.Text);
                 string code = codeTextBox.Text.ToLower();
 
-                if (!IsDuplicate(code, discountsList)) // check whether this code is already in the list
+                if (!Butik.MainWindow.IsDuplicate(code, discountsList)) // check whether this code is already in the list
                 {
                     try
                     {
-                        discountsList.Add(new CodeDiscount { Code = code, Discount = discount });
+                        discountsList.Add(new Butik.CodeDiscount { Code = code, Discount = discount });
                         discountsShow.Add(code + "   " + discount + " %");
                         codeTextBox.Clear();
                         discountTextBox.Clear();
@@ -834,7 +751,7 @@ namespace Butik_Creator
         {
             //string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Coupon.csv"); //temporary path for testing
             List<string> temp = discountsList.Select(code => code.Code + "," + code.Discount).ToList();
-            File.WriteAllLines(CouponGlobalPath, temp);
+            File.WriteAllLines(Butik.MainWindow.CouponGlobalPath, temp);
             MessageBox.Show("File saved");
         }
 

@@ -1,6 +1,6 @@
-﻿using Butik_Creator;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -11,6 +11,41 @@ using System.Windows.Media.Imaging;
 
 namespace Butik
 {
+    public class CodeDiscount
+    {
+        private string code;
+        private int discount;
+
+        public string Code
+        {
+            get => code;
+            set
+            {
+                if (value.Length < 3 || value.Length > 20)
+                    throw new Exception("Code must be between 3 and 20 characters long.");
+
+                char[] letters = value.ToCharArray();
+                var wrongSymbols = letters.Where(l => !char.IsLetterOrDigit(l));
+                if (wrongSymbols.Any()) throw new Exception("Code must consist only of letters and numbers.");
+
+                code = value;
+            }
+        }
+
+        public int Discount
+        {
+            get => discount;
+            set
+            {
+                if (value > 100 || value < 1)
+                {
+                    throw new Exception("Discount must be an integer from 1 to 100.");
+                }
+
+                discount = value;
+            }
+        }
+    }
     internal class Item
     {
         public string Name;
@@ -24,7 +59,8 @@ namespace Butik
         //Global variables
         private const string SavedCartPath = @"C:\Windows\Temp\cart.csv";
         private const string Path = @"C:\Windows\Temp\store.csv";
-        public const string CouponPath = "Coupon.csv";
+        public const string CouponLocalPath = "Coupon.csv";
+        public const string CouponGlobalPath = @"C:\Windows\Temp\" + CouponLocalPath;
         private readonly ListBox CartBody = new ListBox { Margin = new Thickness(5), MaxHeight = 335 };
         internal decimal sumTotal;
         internal decimal sumWithoutDiscount;
@@ -112,8 +148,13 @@ namespace Butik
             grid.Children.Add(leftPanel);
             Grid.SetRow(leftPanel, 1);
             Grid.SetColumn(leftPanel, 0);
+            
+            if (!File.Exists(CouponGlobalPath)) //Copy coupon file from project if it does not exist in Temp
+            {
+                File.Copy("Coupon.csv", CouponGlobalPath);
+            }
 
-            Butik_Creator.MainWindow.LoadDiscounts(discountsList); // Load saved discounts from a file at CouponGlobalPath. If it doesn´t exist, then load discounts from the local file Coupons.scv   
+            LoadDiscounts(discountsList, CouponGlobalPath); // Load saved discounts   
         }
 
         private Grid CreateCartPanel()
@@ -256,11 +297,7 @@ namespace Butik
             {
                 File.Copy("store.csv",Path);
             }
-            if (!File.Exists(CouponPath))
-            {
-                File.Copy("Coupon.csv", CouponPath);
-            }
-
+           
             foreach (var item in File.ReadAllLines(Path).Select(a => a.Split(','))) //Reads csv in order: name, price, description, image name
             {
                 try
@@ -317,7 +354,44 @@ namespace Butik
             }
             return wrapPanel;
         }
+        
+        // Load saved discounts from a file at CouponPath. If it doesn´t exist, then load discounts from the local file Coupons.scv   
+        public static void LoadDiscounts(List<CodeDiscount> discountsList, string path,
+            ObservableCollection<string> discountsShow = null)
+        {
+            var lines = File.ReadAllLines(path).Select(a => a.Split(','));
+            foreach (var item in lines)
+            {
+                try // if code or discount is incorrect, skip it
+                {
+                    int discount = int.Parse(item[1]);
+                    string code = item[0].ToLower();
 
+                    if (IsDuplicate(code, discountsList)) continue;
+                    try
+                    {
+                        discountsList.Add(new CodeDiscount { Code = code, Discount = discount });
+                        discountsShow?.Add(code + "   " + discount + " %");
+                    }
+                    catch
+                    {
+                        // ignored
+                    }
+                }
+                catch
+                {
+                    // ignored
+                }
+            }
+        }
+
+        // Check whether this code is already in the list
+        public static bool IsDuplicate(string code, List<CodeDiscount> list)
+        {
+            var duplication = list.Where(l => l.Code == code);
+            return duplication.Any();
+        }
+        
         //Adds the name of the product to the cart using button tag and updates the total price by assigning the price variable to datacontext
         private void AddToCartOnClick(object sender, RoutedEventArgs e)
         {

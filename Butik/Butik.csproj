@@ -23,8 +23,5 @@
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>
 	</ItemGroup>
-	<ItemGroup>
-	  <ProjectReference Include="..\Butik_Creator\Butik_Creator.csproj" />
-	</ItemGroup>
 
 </Project>
