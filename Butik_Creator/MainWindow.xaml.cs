@@ -117,10 +117,10 @@ namespace Butik_Creator
         private const string Path = @"C:\Windows\Temp\store.csv";
         public const string CouponLocalPath = "Coupon.csv";
         public const string CouponGlobalPath = @"C:\Windows\Temp\" + CouponLocalPath;
-        private List<string> assortItemsSave = new List<string>();
-        private List<string> comparer = new List<string>();
+        private static List<string> assortItemsSave = new List<string>();
+        private static List<string> comparer = new List<string>();
 
-        private List<Store> storeList = new List<Store>();
+        private static List<Store> storeList = new List<Store>();
 
         private List<CodeDiscount>
             discountsList =
@@ -129,7 +129,7 @@ namespace Butik_Creator
         private ObservableCollection<string>
             discountsShow =
                 new ObservableCollection<string>();// List for displaying valid codes and discounts ("code   discount %")
-        private ObservableCollection<string>
+        private static ObservableCollection<string>
             assortShow =
                 new ObservableCollection<string>();
 
@@ -204,7 +204,7 @@ namespace Butik_Creator
             Start();
         }
 
-        private void Start()
+        public void Start()
         {
             // Window options
             Title = "Store management";
@@ -274,7 +274,7 @@ namespace Butik_Creator
             }
 
             LoadDiscounts(discountsList, discountsShow); // Load saved discounts from a file (if it exists)   
-            LoadStore(); // Load saved store from a file store (if it exists)
+            LoadStoreCsv(Path, storeList); // Load saved store from a file store (if it exists)
         }
 
         private Grid CreateAssortmentPanel()
@@ -719,8 +719,7 @@ namespace Butik_Creator
             }
             else return;
 
-            var lines = File.ReadAllLines(path).Select(a => a.Split(','));
-            foreach (var item in lines)
+            foreach (var item in File.ReadAllLines(path).Select(a => a.Split(',')))
             {
                 try // if code or discount is incorrect, skip it
                 {
@@ -756,11 +755,11 @@ namespace Butik_Creator
             var duplication = list.Where(l => l.Name == name);
             return duplication.Any();
         }
-        private void LoadStore()
+        public static bool LoadStoreCsv(string path, List<Store> list)
         {
             var p = new Store();
-            if (!File.Exists(Path)) return;
-            foreach (var item in File.ReadAllLines(Path).Select(a => a.Split(','))
+            if (!File.Exists(path)) return false;
+            foreach (var item in File.ReadAllLines(path).Select(a => a.Split(','))
             ) //Reads csv in order: name, price, description, image name
             {
                 p.Name = item[0].Trim();
@@ -768,12 +767,13 @@ namespace Butik_Creator
                 p.Description = item[2].Trim();
                 p.ImageName = item[3].Trim();
 
-                storeList.Add(new Store
+                list.Add(new Store
                 { Name = p.Name, Price = p.Price, Description = p.Description, ImageName = p.ImageName });
                 assortShow?.Add($"{p.Name} {p.Price}kr");
                 comparer.Add(p.Name.ToLower());
                 assortItemsSave.Add($"{p.Name},{p.Price},{p.Description},{p.ImageName}");
             }
+            return true;
         }
 
         // Remove selection from ListBox
@@ -878,6 +878,11 @@ namespace Butik_Creator
                     comparer.Add(s.Name);
                     storeList.Add(new Store()
                     { Name = s.Name, Price = s.Price, Description = s.Description, ImageName = s.ImageName });
+                    assortmentListBox.SelectedIndex = -1;
+                    nameTextBox.Clear();
+                    descriptionTextBox.Clear();
+                    priceTextBox.Clear();
+                    imageBox.SelectedIndex = -1;
                 }
 
             }
@@ -944,7 +949,8 @@ namespace Butik_Creator
                             nameTextBox.Clear();
                             priceTextBox.Clear();
                             descriptionTextBox.Clear();
-                            discountListBox.SelectedIndex = -1;
+                            assortmentListBox.SelectedIndex = -1;
+                            imageBox.SelectedIndex = -1;
                             assortAddButton.IsEnabled = true;
                             assortSaveChangesButton.IsEnabled = false;
                             assortRemoveButton.IsEnabled = false;

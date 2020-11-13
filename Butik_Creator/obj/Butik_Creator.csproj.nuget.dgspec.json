@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\empir\\Source\\Repos\\Projektarbete10\\Butik_Creator\\Butik_Creator.csproj": {}
+    "C:\\Users\\empir\\Source\\Repos\\Projektarbete11\\Butik_Creator\\Butik_Creator.csproj": {}
   },
   "projects": {
-    "C:\\Users\\empir\\Source\\Repos\\Projektarbete10\\Butik_Creator\\Butik_Creator.csproj": {
+    "C:\\Users\\empir\\Source\\Repos\\Projektarbete11\\Butik_Creator\\Butik_Creator.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\empir\\Source\\Repos\\Projektarbete10\\Butik_Creator\\Butik_Creator.csproj",
+        "projectUniqueName": "C:\\Users\\empir\\Source\\Repos\\Projektarbete11\\Butik_Creator\\Butik_Creator.csproj",
         "projectName": "Butik_Creator",
-        "projectPath": "C:\\Users\\empir\\Source\\Repos\\Projektarbete10\\Butik_Creator\\Butik_Creator.csproj",
+        "projectPath": "C:\\Users\\empir\\Source\\Repos\\Projektarbete11\\Butik_Creator\\Butik_Creator.csproj",
         "packagesPath": "C:\\Users\\empir\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\empir\\Source\\Repos\\Projektarbete10\\Butik_Creator\\obj\\",
+        "outputPath": "C:\\Users\\empir\\Source\\Repos\\Projektarbete11\\Butik_Creator\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\empir\\AppData\\Roaming\\NuGet\\NuGet.Config",
