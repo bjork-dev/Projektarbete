@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Butik_Creator", "..\Butik_C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Butik_CreatorTests", "..\Butik_CreatorTests\Butik_CreatorTests.csproj", "{902BAB32-D9AE-4F29-9EF5-6DF908DA7F59}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ButikTests1", "..\ButikTests1\ButikTests1.csproj", "{173201CD-CC01-481E-9F86-187B9AF5F225}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ButikTests", "..\ButikTests\ButikTests.csproj", "{0581F93E-A8B5-404F-9FF2-17C07D237CE3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,10 +29,10 @@ Global
 		{902BAB32-D9AE-4F29-9EF5-6DF908DA7F59}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{902BAB32-D9AE-4F29-9EF5-6DF908DA7F59}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{902BAB32-D9AE-4F29-9EF5-6DF908DA7F59}.Release|Any CPU.Build.0 = Release|Any CPU
-		{173201CD-CC01-481E-9F86-187B9AF5F225}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{173201CD-CC01-481E-9F86-187B9AF5F225}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{173201CD-CC01-481E-9F86-187B9AF5F225}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{173201CD-CC01-481E-9F86-187B9AF5F225}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0581F93E-A8B5-404F-9FF2-17C07D237CE3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0581F93E-A8B5-404F-9FF2-17C07D237CE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0581F93E-A8B5-404F-9FF2-17C07D237CE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0581F93E-A8B5-404F-9FF2-17C07D237CE3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
