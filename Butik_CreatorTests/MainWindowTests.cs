@@ -1,12 +1,8 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Butik_Creator;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using Butik;
-using System.IO;
+﻿using System.Collections.Generic;
 using System.Threading;
-
+using Butik;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using MainWindow = Butik_Creator.MainWindow;
 
 
 /*
@@ -25,7 +21,7 @@ using System.Threading;
 
 
 
-namespace Butik_Creator.Tests
+namespace Butik_CreatorTests
 {
 [TestClass()]
 public class MainWindowTests
@@ -34,7 +30,7 @@ public class MainWindowTests
     public void LoadStoreCsvTest() // Test to load a csv file containing the items, if the path is found and items are extracted, return true.
                                    //If the list is empty after method run, return fail.
     {
-        Thread STAThread = new Thread(() =>
+        Thread staThread = new Thread(() =>
         {
             var testList = new List<Store>();
             string testPath = "testCSV.csv";
@@ -47,11 +43,11 @@ public class MainWindowTests
             }
 
         });
-        STAThread.SetApartmentState(ApartmentState.STA); //Test would not work without this for some reason
+        staThread.SetApartmentState(ApartmentState.STA); //Test would not work without this for some reason
 
-        STAThread.Start();
+        staThread.Start();
 
-        STAThread.Join();
+        staThread.Join();
     }
 
 
@@ -74,7 +70,7 @@ public class MainWindowTests
     [TestMethod()]
     public void LoadImagesTest()
     {
-        Thread STAThread = new Thread(() =>
+        Thread staThread = new Thread(() =>
         {
 
 
@@ -82,11 +78,11 @@ public class MainWindowTests
             bool result = MainWindow.AddImages(testPath);
             Assert.AreEqual(true, result);
         });
-        STAThread.SetApartmentState(ApartmentState.STA); //Test would not work without this for some reason
+        staThread.SetApartmentState(ApartmentState.STA); //Test would not work without this for some reason
 
-        STAThread.Start();
+        staThread.Start();
 
-        STAThread.Join();
+        staThread.Join();
     }
 }
 }

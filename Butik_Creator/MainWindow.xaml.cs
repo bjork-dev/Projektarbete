@@ -668,7 +668,6 @@ namespace Butik_Creator
             var result = MessageBox.Show(message, "Remove all", MessageBoxButton.YesNo);
             if (result != MessageBoxResult.Yes) return;
             assortShow.Clear();
-            //File.Create(Path);
             assortItemsSave.Clear();
             comparer.Clear();
             storeList.Clear();
