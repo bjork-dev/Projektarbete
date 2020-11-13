@@ -355,6 +355,16 @@ namespace Butik_Creator
             Grid.SetColumn(nameLabel, 0);
             Grid.SetRow(nameLabel, 0);
 
+            Label selectImageLabel = new Label
+            {
+                Content = "Select image",
+                Margin = new Thickness(10),
+                HorizontalContentAlignment = HorizontalAlignment.Center
+            };
+            nestedGrid.Children.Add(selectImageLabel);
+            Grid.SetColumn(selectImageLabel, 3);
+            Grid.SetRow(selectImageLabel, 0);
+            Grid.SetRowSpan(selectImageLabel, 3);
 
             nestedGrid.Children.Add(nameTextBox);
             Grid.SetColumn(nameTextBox, 1);
@@ -741,6 +751,11 @@ namespace Butik_Creator
             var duplication = list.Where(l => l.Code == code);
             return duplication.Any();
         }
+        public static bool AssortIsDuplicate(string name, List<Store> list)
+        {
+            var duplication = list.Where(l => l.Name == name);
+            return duplication.Any();
+        }
         private void LoadStore()
         {
             var p = new Store();
@@ -881,6 +896,7 @@ namespace Butik_Creator
             else
             {
                 File.WriteAllLines(Path, assortItemsSave);
+                MessageBox.Show("Items saved to store file.");
             }
 
         }
@@ -911,50 +927,41 @@ namespace Butik_Creator
                 var imageName = imageBox.Text;
 
                 List<Store> copyStoreList = storeList.Select(l => l).ToList();
-                copyStoreList.RemoveAt(indexSelected);
-
-                for (int i = 0; i < storeList.Count; i++) 
+                copyStoreList.RemoveAt(indexSelected);                
                 {
-                    if (assortShow[i].Contains(name)) // TODO not finished
+                    if(!AssortIsDuplicate(name, copyStoreList))
                     {
-                        return;
+                        try // Select the property from selected index
+                        {
+
+                            storeList[indexSelected].Name = name;
+                            storeList[indexSelected].Price = decimal.Parse(price);
+                            storeList[indexSelected].Description = description;
+                            storeList[indexSelected].ImageName = imageName;
+                            assortShow[indexSelected] = $"{name} {price}kr";
+
+                            //Clear textboxes and enable / disable buttons
+                            nameTextBox.Clear();
+                            priceTextBox.Clear();
+                            descriptionTextBox.Clear();
+                            discountListBox.SelectedIndex = -1;
+                            assortAddButton.IsEnabled = true;
+                            assortSaveChangesButton.IsEnabled = false;
+                            assortRemoveButton.IsEnabled = false;
+
+                            //Remove previous entry and replace with new
+                            comparer.RemoveAt(indexSelected);
+                            comparer.Insert(indexSelected, name);
+                            assortItemsSave.Insert(indexSelected, $"{name},{price},{description},{imageName}");
+                            assortItemsSave.RemoveAt(indexSelected + 1);
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show(ex.Message);
+                        }
                     }
+                   
                 }
-                {
-                    try // Select the property from selected index
-                    {
-
-                        storeList[indexSelected].Name = name;
-                        storeList[indexSelected].Price = decimal.Parse(price);
-                        storeList[indexSelected].Description = description;
-                        storeList[indexSelected].ImageName = imageName;
-                        assortShow[indexSelected] = $"{name} {price}kr";
-
-                        //Clear textboxes and enable / disable buttons
-                        nameTextBox.Clear();
-                        priceTextBox.Clear();
-                        descriptionTextBox.Clear();
-                        discountListBox.SelectedIndex = -1;
-                        assortAddButton.IsEnabled = true;
-                        assortSaveChangesButton.IsEnabled = false;
-                        assortRemoveButton.IsEnabled = false;
-
-                        //Remove previous entry and replace with new
-                        comparer.RemoveAt(indexSelected);
-                        comparer.Insert(indexSelected, name);
-                        assortItemsSave.Insert(indexSelected, $"{name},{price},{description},{imageName}");
-                        assortItemsSave.RemoveAt(indexSelected + 1);
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show(ex.Message);
-                    }
-                }
-               
-
-
-
-
             }
             catch (Exception)
             {
@@ -970,7 +977,6 @@ namespace Butik_Creator
             nameTextBox.Clear();
             priceTextBox.Clear();
             descriptionTextBox.Clear();
-            discountListBox.SelectedIndex = -1;
             assortShow.RemoveAt(indexSelected);
             comparer.RemoveAt(indexSelected);
             assortItemsSave.RemoveAt(indexSelected);

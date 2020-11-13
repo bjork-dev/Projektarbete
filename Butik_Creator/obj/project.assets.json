@@ -8,19 +8,19 @@
     ".NETCoreApp,Version=v3.1": []
   },
   "packageFolders": {
-    "C:\\Users\\nissi\\.nuget\\packages\\": {}
+    "C:\\Users\\empir\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\nissi\\Source\\Repos\\bjork-dev\\Projektarbete\\Butik_Creator\\Butik_Creator.csproj",
+      "projectUniqueName": "C:\\Users\\empir\\Source\\Repos\\Projektarbete10\\Butik_Creator\\Butik_Creator.csproj",
       "projectName": "Butik_Creator",
-      "projectPath": "C:\\Users\\nissi\\Source\\Repos\\bjork-dev\\Projektarbete\\Butik_Creator\\Butik_Creator.csproj",
-      "packagesPath": "C:\\Users\\nissi\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\nissi\\Source\\Repos\\bjork-dev\\Projektarbete\\Butik_Creator\\obj\\",
+      "projectPath": "C:\\Users\\empir\\Source\\Repos\\Projektarbete10\\Butik_Creator\\Butik_Creator.csproj",
+      "packagesPath": "C:\\Users\\empir\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\empir\\Source\\Repos\\Projektarbete10\\Butik_Creator\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\nissi\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\empir\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -61,7 +61,7 @@
             "privateAssets": "none"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.101\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.402\\RuntimeIdentifierGraph.json"
       }
     }
   }
