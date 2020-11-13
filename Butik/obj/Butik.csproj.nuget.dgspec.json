@@ -1,79 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\empir\\Source\\Repos\\Projektarbete11\\Butik\\Butik.csproj": {}
+    "C:\\Users\\ersve\\Documents\\GitHub\\Projektarbete\\Butik\\Butik.csproj": {}
   },
   "projects": {
-    "C:\\Users\\empir\\Source\\Repos\\Projektarbete11\\Butik\\Butik.csproj": {
+    "C:\\Users\\ersve\\Documents\\GitHub\\Projektarbete\\Butik\\Butik.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\empir\\Source\\Repos\\Projektarbete11\\Butik\\Butik.csproj",
+        "projectUniqueName": "C:\\Users\\ersve\\Documents\\GitHub\\Projektarbete\\Butik\\Butik.csproj",
         "projectName": "Butik",
-        "projectPath": "C:\\Users\\empir\\Source\\Repos\\Projektarbete11\\Butik\\Butik.csproj",
-        "packagesPath": "C:\\Users\\empir\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\empir\\Source\\Repos\\Projektarbete11\\Butik\\obj\\",
+        "projectPath": "C:\\Users\\ersve\\Documents\\GitHub\\Projektarbete\\Butik\\Butik.csproj",
+        "packagesPath": "C:\\Users\\ersve\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\ersve\\Documents\\GitHub\\Projektarbete\\Butik\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\empir\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
-        ],
-        "originalTargetFrameworks": [
-          "netcoreapp3.1"
-        ],
-        "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "https://api.nuget.org/v3/index.json": {}
-        },
-        "frameworks": {
-          "netcoreapp3.1": {
-            "projectReferences": {
-              "C:\\Users\\empir\\Source\\Repos\\Projektarbete11\\Butik_Creator\\Butik_Creator.csproj": {
-                "projectPath": "C:\\Users\\empir\\Source\\Repos\\Projektarbete11\\Butik_Creator\\Butik_Creator.csproj"
-              }
-            }
-          }
-        },
-        "warningProperties": {
-          "warnAsError": [
-            "NU1605"
-          ]
-        }
-      },
-      "frameworks": {
-        "netcoreapp3.1": {
-          "imports": [
-            "net461",
-            "net462",
-            "net47",
-            "net471",
-            "net472",
-            "net48"
-          ],
-          "assetTargetFallback": true,
-          "warn": true,
-          "frameworkReferences": {
-            "Microsoft.NETCore.App": {
-              "privateAssets": "all"
-            },
-            "Microsoft.WindowsDesktop.App.WPF": {
-              "privateAssets": "none"
-            }
-          },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.402\\RuntimeIdentifierGraph.json"
-        }
-      }
-    },
-    "C:\\Users\\empir\\Source\\Repos\\Projektarbete11\\Butik_Creator\\Butik_Creator.csproj": {
-      "version": "1.0.0",
-      "restore": {
-        "projectUniqueName": "C:\\Users\\empir\\Source\\Repos\\Projektarbete11\\Butik_Creator\\Butik_Creator.csproj",
-        "projectName": "Butik_Creator",
-        "projectPath": "C:\\Users\\empir\\Source\\Repos\\Projektarbete11\\Butik_Creator\\Butik_Creator.csproj",
-        "packagesPath": "C:\\Users\\empir\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\empir\\Source\\Repos\\Projektarbete11\\Butik_Creator\\obj\\",
-        "projectStyle": "PackageReference",
-        "configFilePaths": [
-          "C:\\Users\\empir\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\ersve\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [

@@ -1,26 +1,48 @@
 {
   "version": 3,
   "targets": {
-    ".NETCoreApp,Version=v3.1": {}
+    ".NETCoreApp,Version=v3.1": {
+      "Butik/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v3.1",
+        "compile": {
+          "bin/placeholder/Butik.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Butik.dll": {}
+        },
+        "frameworkReferences": [
+          "Microsoft.WindowsDesktop.App.WPF"
+        ]
+      }
+    }
   },
-  "libraries": {},
+  "libraries": {
+    "Butik/1.0.0": {
+      "type": "project",
+      "path": "../Butik/Butik.csproj",
+      "msbuildProject": "../Butik/Butik.csproj"
+    }
+  },
   "projectFileDependencyGroups": {
-    ".NETCoreApp,Version=v3.1": []
+    ".NETCoreApp,Version=v3.1": [
+      "Butik >= 1.0.0"
+    ]
   },
   "packageFolders": {
-    "C:\\Users\\empir\\.nuget\\packages\\": {}
+    "C:\\Users\\ersve\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\empir\\Source\\Repos\\Projektarbete11\\Butik_Creator\\Butik_Creator.csproj",
+      "projectUniqueName": "C:\\Users\\ersve\\Documents\\GitHub\\Projektarbete\\Butik_Creator\\Butik_Creator.csproj",
       "projectName": "Butik_Creator",
-      "projectPath": "C:\\Users\\empir\\Source\\Repos\\Projektarbete11\\Butik_Creator\\Butik_Creator.csproj",
-      "packagesPath": "C:\\Users\\empir\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\empir\\Source\\Repos\\Projektarbete11\\Butik_Creator\\obj\\",
+      "projectPath": "C:\\Users\\ersve\\Documents\\GitHub\\Projektarbete\\Butik_Creator\\Butik_Creator.csproj",
+      "packagesPath": "C:\\Users\\ersve\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\ersve\\Documents\\GitHub\\Projektarbete\\Butik_Creator\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\empir\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\ersve\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -32,7 +54,11 @@
       },
       "frameworks": {
         "netcoreapp3.1": {
-          "projectReferences": {}
+          "projectReferences": {
+            "C:\\Users\\ersve\\Documents\\GitHub\\Projektarbete\\Butik\\Butik.csproj": {
+              "projectPath": "C:\\Users\\ersve\\Documents\\GitHub\\Projektarbete\\Butik\\Butik.csproj"
+            }
+          }
         }
       },
       "warningProperties": {
