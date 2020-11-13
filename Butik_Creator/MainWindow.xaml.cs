@@ -9,73 +9,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-
 namespace Butik_Creator
 {
-    public class Store
-    {
-        private string name;
-        private string description;
-        private string imageName;
-        private decimal price;
 
-        public string Name
-        {
-            get => name;
-            set
-            {
-                if (value == string.Empty)
-                {
-                    throw new Exception("Name cannot be null");
-                }
-
-                name = value;
-            }
-        }
-
-        public decimal Price
-        {
-            get => price;
-            set
-            {
-                if (value < 0 || value == 0)
-                {
-                    throw new Exception("Price cannot be 0 or less");
-                }
-
-                price = value;
-            }
-        }
-
-        public string Description
-        {
-            get => description;
-            set
-            {
-                if (value == string.Empty)
-                {
-                    throw new Exception("Description cannot be null");
-
-                }
-
-                description = value;
-            }
-        }
-
-        public string ImageName
-        {
-            get => imageName;
-            set
-            {
-                if (imageName == string.Empty)
-                {
-                    throw new Exception("Image name cannot be null");
-                }
-
-                imageName = value;
-            }
-        }
-    }
 
     public partial class MainWindow : Window
     {
@@ -122,7 +58,7 @@ namespace Butik_Creator
             Margin = new Thickness(5)
         };
 
-        ComboBox imageBox = new ComboBox()
+        static ComboBox imageBox = new ComboBox()
         {
             Text = "Select image",
             IsReadOnly = true,
@@ -160,6 +96,7 @@ namespace Butik_Creator
             Padding = new Thickness(5),
             IsEnabled = true
         };
+        static WrapPanel bildGallery = new WrapPanel { Orientation = Orientation.Horizontal };
 
         public MainWindow()
         {
@@ -284,7 +221,7 @@ namespace Butik_Creator
             Grid.SetRow(galleryLabel, 2);
             Grid.SetColumnSpan(galleryLabel, 2);
 
-            WrapPanel bildGallery = new WrapPanel { Orientation = Orientation.Horizontal };
+
             assortmentGrid.Children.Add(bildGallery);
             Grid.SetColumn(bildGallery, 0);
             Grid.SetRow(bildGallery, 3);
@@ -372,36 +309,7 @@ namespace Butik_Creator
             Grid.SetRow(imageBox, 0);
             Grid.SetRowSpan(imageBox, 3);
 
-            var dir = Directory.GetCurrentDirectory();
-            foreach (var item in Directory.GetFiles($@"{dir}\Images")
-            ) //Gets all files in the image folder and then extracts the image filename
-            {
-                string[] arr = item.Split('\\');
-                var lastItem = arr.Last();
-                imageBox.Items.Add(lastItem);
-
-                Image testImage = new Image //Adds an image per file in the image folder
-                {
-                    Source = new BitmapImage(new Uri(@$"Images\{lastItem}", UriKind.Relative)),
-                    HorizontalAlignment = HorizontalAlignment.Center,
-                    VerticalAlignment = VerticalAlignment.Center,
-                    Margin = new Thickness(5),
-                    Width = 80,
-                    Height = 80,
-                    Stretch = Stretch.Uniform
-                };
-                RenderOptions.SetBitmapScalingMode(testImage, BitmapScalingMode.HighQuality);
-                bildGallery.Children.Add(testImage);
-
-                Label imageLabel = new Label //To describe the filenames of the images
-                {
-                    Content = lastItem,
-                    Margin = new Thickness(5),
-                    HorizontalContentAlignment = HorizontalAlignment.Center
-
-                };
-                bildGallery.Children.Add(imageLabel);
-            }
+            AddImages(Directory.GetCurrentDirectory()); // Gets images from current project folder
 
             Grid.SetRow(assortSaveChangesButton, 3);
             Grid.SetColumn(assortSaveChangesButton, 1);
@@ -680,7 +588,7 @@ namespace Butik_Creator
             ) //Reads csv in order: name, price, description, image name
             {
                 p.Name = item[0].Trim();
-                p.Price = decimal.Parse(item[1].Trim());
+                p.Price = Math.Round(decimal.Parse(item[1].Trim()), 2);
                 p.Description = item[2].Trim();
                 p.ImageName = item[3].Trim();
 
@@ -772,7 +680,7 @@ namespace Butik_Creator
                 var s = new Store
                 {
                     Name = nameTextBox.Text,
-                    Price = decimal.Parse(priceTextBox.Text),
+                    Price = Math.Round(decimal.Parse(priceTextBox.Text), 2),
                     Description = descriptionTextBox.Text,
                     ImageName = imageBox.SelectionBoxItem.ToString()
                 };
@@ -828,8 +736,7 @@ namespace Butik_Creator
             if (assortmentListBox.SelectedIndex != -1)
             {
                 nameTextBox.Text = storeList[assortmentListBox.SelectedIndex].Name;
-                priceTextBox.Text = storeList[assortmentListBox.SelectedIndex].Price
-                    .ToString(CultureInfo.InvariantCulture);
+                priceTextBox.Text = storeList[assortmentListBox.SelectedIndex].Price.ToString();
                 descriptionTextBox.Text = storeList[assortmentListBox.SelectedIndex].Description;
                 imageBox.Text = storeList[assortmentListBox.SelectedIndex].ImageName;
                 assortSaveChangesButton.IsEnabled = true;
@@ -844,20 +751,21 @@ namespace Butik_Creator
             try
             {
                 var name = nameTextBox.Text;
-                var price = priceTextBox.Text;
+                var pricee = decimal.Parse(priceTextBox.Text);
+                var price = Math.Round(pricee, 2);
                 var description = descriptionTextBox.Text;
                 var imageName = imageBox.Text;
 
                 List<Store> copyStoreList = storeList.Select(l => l).ToList();
-                copyStoreList.RemoveAt(indexSelected);                
+                copyStoreList.RemoveAt(indexSelected);
                 {
-                    if(!AssortIsDuplicate(name, copyStoreList))
+                    if (!AssortIsDuplicate(name, copyStoreList))
                     {
                         try // Select the property from selected index
                         {
 
                             storeList[indexSelected].Name = name;
-                            storeList[indexSelected].Price = decimal.Parse(price);
+                            storeList[indexSelected].Price = price;
                             storeList[indexSelected].Description = description;
                             storeList[indexSelected].ImageName = imageName;
                             assortShow[indexSelected] = $"{name} {price}kr";
@@ -883,7 +791,7 @@ namespace Butik_Creator
                             MessageBox.Show(ex.Message);
                         }
                     }
-                   
+
                 }
             }
             catch (Exception)
@@ -903,6 +811,44 @@ namespace Butik_Creator
             assortShow.RemoveAt(indexSelected);
             comparer.RemoveAt(indexSelected);
             assortItemsSave.RemoveAt(indexSelected);
+        }
+        public static bool AddImages(string dir) //Adds images from the current project image folder
+        {
+            //dir = Directory.GetCurrentDirectory();
+            foreach (var item in Directory.GetFiles($@"{dir}\Images")
+            ) //Gets all files in the image folder and then extracts the image filename
+            {
+                if (item.Length == 0)
+                {
+                    return false;
+                }
+                string[] arr = item.Split('\\');
+                var lastItem = arr.Last();
+                imageBox.Items.Add(lastItem);
+
+                Image testImage = new Image //Adds an image per file in the image folder
+                {
+                    Source = new BitmapImage(new Uri(@$"Images\{lastItem}", UriKind.Relative)),
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    VerticalAlignment = VerticalAlignment.Center,
+                    Margin = new Thickness(5),
+                    Width = 80,
+                    Height = 80,
+                    Stretch = Stretch.Uniform
+                };
+                RenderOptions.SetBitmapScalingMode(testImage, BitmapScalingMode.HighQuality);
+                bildGallery.Children.Add(testImage);
+
+                Label imageLabel = new Label //To describe the filenames of the images
+                {
+                    Content = lastItem,
+                    Margin = new Thickness(5),
+                    HorizontalContentAlignment = HorizontalAlignment.Center
+
+                };
+                bildGallery.Children.Add(imageLabel);
+            }
+            return true;
         }
     }
 }

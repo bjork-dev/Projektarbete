@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\ersve\\Documents\\GitHub\\Projektarbete\\Butik\\Butik.csproj": {}
+    "C:\\Users\\empir\\Source\\Repos\\Projektarbete13\\Butik\\Butik.csproj": {}
   },
   "projects": {
-    "C:\\Users\\ersve\\Documents\\GitHub\\Projektarbete\\Butik\\Butik.csproj": {
+    "C:\\Users\\empir\\Source\\Repos\\Projektarbete13\\Butik\\Butik.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\ersve\\Documents\\GitHub\\Projektarbete\\Butik\\Butik.csproj",
+        "projectUniqueName": "C:\\Users\\empir\\Source\\Repos\\Projektarbete13\\Butik\\Butik.csproj",
         "projectName": "Butik",
-        "projectPath": "C:\\Users\\ersve\\Documents\\GitHub\\Projektarbete\\Butik\\Butik.csproj",
-        "packagesPath": "C:\\Users\\ersve\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\ersve\\Documents\\GitHub\\Projektarbete\\Butik\\obj\\",
+        "projectPath": "C:\\Users\\empir\\Source\\Repos\\Projektarbete13\\Butik\\Butik.csproj",
+        "packagesPath": "C:\\Users\\empir\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\empir\\Source\\Repos\\Projektarbete13\\Butik\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\ersve\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\empir\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
