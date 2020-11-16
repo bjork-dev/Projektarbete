@@ -744,8 +744,14 @@ namespace Butik_Creator
                 descriptionTextBox.Text = storeList[assortmentListBox.SelectedIndex].Description;
                 imageBox.Text = storeList[assortmentListBox.SelectedIndex].ImageName;
                 assortSaveChangesButton.IsEnabled = true;
-                assortSaveChangesButton.IsEnabled = true;
+                assortAddButton.IsEnabled = true;
                 assortRemoveButton.IsEnabled = true;
+            }
+            else
+            {
+                assortAddButton.IsEnabled = true;
+                assortSaveChangesButton.IsEnabled = false;
+                assortRemoveButton.IsEnabled = false;
             }
         }
         private void AssortSaveChanges(object sender, RoutedEventArgs e)
