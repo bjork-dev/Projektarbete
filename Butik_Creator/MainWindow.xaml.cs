@@ -14,6 +14,8 @@ namespace Butik_Creator
 {
     public partial class MainWindow : Window
     {
+
+        //Global variables
         private const string Path = @"C:\Windows\Temp\store.csv";
         private static List<string> assortItemsSave = new List<string>();
         private static List<string> comparer = new List<string>();
@@ -97,6 +99,7 @@ namespace Butik_Creator
         };
         static WrapPanel bildGallery = new WrapPanel { Orientation = Orientation.Horizontal };
 
+        //End of global variables
         public MainWindow()
         {
             InitializeComponent();
@@ -106,7 +109,7 @@ namespace Butik_Creator
         public void Start()
         {
             // Window options
-            Title = "Store management";
+            Title = "Store Mangement";
             Width = 1200;
             Height = 600;
             WindowStartupLocation = WindowStartupLocation.CenterScreen;
@@ -176,7 +179,7 @@ namespace Butik_Creator
             LoadStoreCsv(Path, storeList); // Load saved store from a file store (if it exists)
         }
 
-        private Grid CreateAssortmentPanel()
+        private Grid CreateAssortmentPanel() //Left side of the application
         {
             // Nested grid for the part Assortment
             Grid assortmentGrid = new Grid
@@ -196,6 +199,7 @@ namespace Butik_Creator
             Grid.SetRow(assortmentListBox, 0);
             assortmentListBox.ItemsSource = assortShow;
 
+            //Remove all items in store.csv button
             Button assortRemoveAll = new Button
             {
                 Content = "Remove all",
@@ -219,7 +223,6 @@ namespace Butik_Creator
             Grid.SetColumn(galleryLabel, 0);
             Grid.SetRow(galleryLabel, 2);
             Grid.SetColumnSpan(galleryLabel, 2);
-
 
             assortmentGrid.Children.Add(bildGallery);
             Grid.SetColumn(bildGallery, 0);
@@ -308,7 +311,7 @@ namespace Butik_Creator
             Grid.SetRow(imageBox, 0);
             Grid.SetRowSpan(imageBox, 3);
 
-            AddImages(Directory.GetCurrentDirectory()); // Gets images from current project folder
+            AddImages(Directory.GetCurrentDirectory()); // Gets images from current project folder and and adds them
 
             Grid.SetRow(assortSaveChangesButton, 3);
             Grid.SetColumn(assortSaveChangesButton, 1);
@@ -343,7 +346,7 @@ namespace Butik_Creator
             return assortmentGrid;
         }
 
-        private Grid CreateDiscountPanel()
+        private Grid CreateDiscountPanel() //Right side of application
         {
             // Nested grid for the part Discount
             Grid discountGrid = new Grid
@@ -504,7 +507,7 @@ namespace Butik_Creator
         }
 
         // Remove selected code and discount
-        private void RemoveButton_Click(object sender, RoutedEventArgs e)
+        private void RemoveButton_Click(object sender, RoutedEventArgs e) //Gets the selected row/index in the listbox and removes that item from the discount lists
         {
             int indexToRemove = discountListBox.SelectedIndex;
             if (indexToRemove == -1)
@@ -534,7 +537,10 @@ namespace Butik_Creator
         }
 
         //Save changes to the selected code
-        private void SaveChangesButton_Click(object sender, RoutedEventArgs e)
+
+        private void SaveChangesButton_Click(object sender, RoutedEventArgs e) //Saves the changes by replacing the previous entry at the specified index with the new entry.
+            //Checks if there are duplicates by creating a temporary list and first removing the selected item and then compares the temp list with the new item.
+            
         {
             int indexSelected = discountListBox.SelectedIndex;
 
@@ -574,12 +580,12 @@ namespace Butik_Creator
             }
         }
 
-        public static bool AssortIsDuplicate(string name, List<Store> list)
+        public static bool AssortIsDuplicate(string name, List<Store> list) //Check the list to find entries with the same name
         {
             var duplication = list.Where(l => l.Name == name);
             return duplication.Any();
         }
-        public static bool LoadStoreCsv(string path, List<Store> list)
+        public static bool LoadStoreCsv(string path, List<Store> list) //Gets the store csv from temp folder, and adds each entry to the lists
         {
             var p = new Store();
             if (!File.Exists(path)) return false;
@@ -592,10 +598,10 @@ namespace Butik_Creator
                 p.ImageName = item[3].Trim();
 
                 list.Add(new Store
-                { Name = p.Name, Price = p.Price, Description = p.Description, ImageName = p.ImageName });
-                assortShow?.Add($"{p.Name} {p.Price}kr");
-                comparer.Add(p.Name.ToLower());
-                assortItemsSave.Add($"{p.Name},{p.Price},{p.Description},{p.ImageName}");
+                { Name = p.Name, Price = p.Price, Description = p.Description, ImageName = p.ImageName }); //Add to storelist
+                assortShow?.Add($"{p.Name} {p.Price}kr"); //Add to string list
+                comparer.Add(p.Name.ToLower()); //Add to comparer list
+                assortItemsSave.Add($"{p.Name},{p.Price},{p.Description},{p.ImageName}"); //Add to the assortItemsSave list
             }
             return true;
         }
@@ -654,7 +660,7 @@ namespace Butik_Creator
             }
         }
 
-        private void SaveCoupon(object sender, RoutedEventArgs e)
+        private void SaveCoupon(object sender, RoutedEventArgs e) //Saves entry to coupon file
         {
             List<string> temp = discountsList.Select(code => code.Code + "," + code.Discount).ToList();
             File.WriteAllLines(Butik.MainWindow.CouponGlobalPath, temp);
@@ -677,7 +683,7 @@ namespace Butik_Creator
             imageBox.SelectedIndex = -1;
         }
 
-        private void AddAssortment(object sender, RoutedEventArgs e)
+        private void AddAssortment(object sender, RoutedEventArgs e) //Adds a new item to lists
         {
             try
             {
@@ -689,23 +695,23 @@ namespace Butik_Creator
                     ImageName = imageBox.SelectionBoxItem.ToString()
                 };
 
-                for (int i = 0; i < assortmentListBox.Items.Count; i++)
+                for (int i = 0; i < assortmentListBox.Items.Count; i++) //Check if the item exists in the comparer list
                 {
                     if (!comparer.Contains(s.Name.ToLower())) continue;
                     MessageBox.Show("Product already exists.");
                     return;
                 }
 
-                if (s.ImageName == string.Empty)
+                if (s.ImageName == string.Empty) //If no image is selected, prompt msg box.
                 {
                     MessageBox.Show("Please select an image");
                 }
                 else
                 {
-                    assortShow.Add($"{s.Name} {s.Price}kr");
-                    assortItemsSave.Add($"{s.Name},{s.Price},{s.Description},{s.ImageName}");
-                    comparer.Add(s.Name.ToLower());
-                    storeList.Add(new Store()
+                    assortShow.Add($"{s.Name} {s.Price}kr"); //Add to string collection
+                    assortItemsSave.Add($"{s.Name},{s.Price},{s.Description},{s.ImageName}"); //Add to save list
+                    comparer.Add(s.Name.ToLower()); //Add new entry to comparer list
+                    storeList.Add(new Store() //Add to storeList
                     { Name = s.Name, Price = s.Price, Description = s.Description, ImageName = s.ImageName });
                     assortmentListBox.SelectedIndex = -1;
                     nameTextBox.Clear();
@@ -735,7 +741,7 @@ namespace Butik_Creator
 
         }
 
-        private void AssortmentListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void AssortmentListBox_SelectionChanged(object sender, SelectionChangedEventArgs e) //Fetch the correct item values based on selected index
         {
             if (assortmentListBox.SelectedIndex != -1)
             {
@@ -804,7 +810,7 @@ namespace Butik_Creator
 
                 }
             }
-            catch (Exception)
+            catch
             {
                 // ignored
             }

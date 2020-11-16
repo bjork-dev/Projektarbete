@@ -214,7 +214,7 @@ namespace Butik
             LoadDiscounts(discountsList, CouponGlobalPath); // Load saved discounts   
         }
 
-        private Grid CreateCartPanel()
+        private Grid CreateCartPanel() //Right side of the application
         {
             // Nested grid for the part Cart
             Grid cartGrid = new Grid
@@ -341,7 +341,7 @@ namespace Butik
             return cartGrid;
         }
 
-        private WrapPanel StorePanel()
+        private WrapPanel StorePanel() //Left side of the application
         {
             var p = new Store();
 
@@ -349,7 +349,7 @@ namespace Butik
             {
                 Margin = new Thickness(5)
             };
-            if (!File.Exists(Path))
+            if (!File.Exists(Path)) //If no store.csv file exists in the temp folder, copy the file from project to temp
             {
                 File.Copy("store.csv", Path);
             }
@@ -358,7 +358,7 @@ namespace Butik
             {
                 try
                 {
-                    p.Name = item[0];
+                    p.Name = item[0]; //Assign each delimted item to an attribute
                     p.Price = decimal.Parse(item[1]);
                     p.Description = item[2];
                     p.ImageName = item[3];
@@ -381,7 +381,7 @@ namespace Butik
                     wrapPanel.Children.Add(image);
                     //Product title
 
-                    Label titleLabel = new Label
+                    Label titleLabel = new Label //Create a title label from the store item's name
                     {
                         Content = p.Name + "\n\n" + p.Description.Trim(' '),
                         Margin = new Thickness(5),
@@ -390,7 +390,7 @@ namespace Butik
                         HorizontalContentAlignment = HorizontalAlignment.Left
                     };
                     wrapPanel.Children.Add(titleLabel);
-                    var button = new Button
+                    var button = new Button //The buy button, fetches price attribute from store item
                     {
                         Content = $"Buy ({p.Price}kr)",
                         HorizontalAlignment = HorizontalAlignment.Left,
@@ -408,7 +408,7 @@ namespace Butik
                 {
                     if (p.Name == null || p.Price == 0 || p.Description == null || p.ImageName == null)
                     {
-                        continue; //Skips the iteration, if one of the attributes are missing.
+                        continue; //Skips the iteration, if one of the attributes are missing, instead of crashing.
                     }
                     MessageBox.Show("Alert!\n\nOne or more products could not be added due to missing attributes in csv file");
                 }
@@ -464,6 +464,7 @@ namespace Butik
             totalPrice.Text = ShowTotalPrice();
         }
 
+        // Adds item to reciept and displays it to the user, then clears the lists that previously contained the cart items and resets the total sum and discount.
         private void CheckoutOnClick(object sender, RoutedEventArgs e)
         {
             var checkoutList = (from object item in CartBody.Items select item.ToString()).ToList();
@@ -503,7 +504,7 @@ namespace Butik
             savedItemsList.Clear();
         }
 
-        private void RemoveFromCartOnClick(object sender, RoutedEventArgs e)
+        private void RemoveFromCartOnClick(object sender, RoutedEventArgs e) //Gets the selected index in the listbox and then removes the item connected.
         {
             int indexToRemove = CartBody.SelectedIndex;
             if (indexToRemove == -1)
@@ -524,7 +525,7 @@ namespace Butik
             }
         }
 
-        private void SaveCart(object sender, RoutedEventArgs e)
+        private void SaveCart(object sender, RoutedEventArgs e) //Saves added cart items to cart.csv in temp folder, creates the file if it does not exist.
         {
             if (sumWithoutDiscount == 0)
             {
