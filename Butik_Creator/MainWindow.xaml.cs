@@ -34,10 +34,10 @@ namespace Butik_Creator
                 new ObservableCollection<string>();
         List<string> imageList = new List<string>();
 
-        TextBox codeTextBox;
-        TextBox discountTextBox;
-        ListBox discountListBox;
-        Button addButton, discardButton, saveChangesButton;
+        private TextBox codeTextBox;
+        private TextBox discountTextBox;
+        private ListBox discountListBox;
+        private Button addButton, discardButton, saveChangesButton;
 
         ListBox assortmentListBox = new ListBox
         {

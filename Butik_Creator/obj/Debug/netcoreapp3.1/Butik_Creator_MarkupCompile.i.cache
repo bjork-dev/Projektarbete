@@ -1,20 +1,20 @@
 ﻿Butik_Creator
-1.0.0.0
+
 
 winexe
 C#
 .cs
-C:\Users\ersve\Documents\GitHub\Projektarbete\Butik_Creator\obj\Debug\netcoreapp3.1\
+C:\Users\nissi\Source\Repos\bjork-dev\Projektarbete\Butik_Creator\obj\Debug\netcoreapp3.1\
 Butik_Creator
 none
 false
 TRACE;DEBUG;NETCOREAPP;NETCOREAPP3_1
-C:\Users\ersve\Documents\GitHub\Projektarbete\Butik_Creator\App.xaml
+C:\Users\nissi\Source\Repos\bjork-dev\Projektarbete\Butik_Creator\App.xaml
 11151548125
 16317975468
-51558916419
-193-1285083750
+42031213584
+1932123453323
 MainWindow.xaml;
 
-False
+True
 

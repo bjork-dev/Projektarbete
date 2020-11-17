@@ -146,9 +146,9 @@ namespace Butik
         {
 
             // Window options
-            Title = "Store";
+            Title = "Overpriced Snus Store";
             Width = 1200;
-            Height = 600;
+            Height = 700;
             WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
             // Scrolling

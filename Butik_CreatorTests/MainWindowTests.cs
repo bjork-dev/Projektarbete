@@ -70,12 +70,13 @@ public class MainWindowTests
     [TestMethod()]
     public void LoadImagesTest()
     {
+        List<string> imageList = new List<string>();
         Thread staThread = new Thread(() =>
         {
 
 
             string testPath = System.Environment.CurrentDirectory;
-            bool result = MainWindow.AddImages(testPath);
+            bool result = MainWindow.AddImages(testPath, imageList);
             Assert.AreEqual(true, result);
         });
         staThread.SetApartmentState(ApartmentState.STA); //Test would not work without this for some reason
