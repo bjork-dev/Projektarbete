@@ -32,6 +32,7 @@ namespace Butik_Creator
         private static ObservableCollection<string>
             assortShow =
                 new ObservableCollection<string>();
+        List<string> imageList = new List<string>();
 
         TextBox codeTextBox;
         TextBox discountTextBox;
@@ -41,7 +42,8 @@ namespace Butik_Creator
         ListBox assortmentListBox = new ListBox
         {
             Margin = new Thickness(5),
-            //   MaxHeight = 300
+            Height = 300,
+            VerticalAlignment = VerticalAlignment.Top
         };
 
         TextBox nameTextBox = new TextBox
@@ -63,12 +65,11 @@ namespace Butik_Creator
         {
             Text = "Select image",
             IsReadOnly = true,
-            HorizontalAlignment = HorizontalAlignment.Center,
-            VerticalAlignment = VerticalAlignment.Center,
+            VerticalContentAlignment = VerticalAlignment.Center,
+            HorizontalContentAlignment = HorizontalAlignment.Center,
             Margin = new Thickness(5),
-            Width = 100,
-            Height = 25,
-            // Stretch = Stretch.Uniform
+            Width = 130,
+            Height = 130
         };
 
         Button assortSaveChangesButton = new Button
@@ -97,7 +98,6 @@ namespace Butik_Creator
             Padding = new Thickness(5),
             IsEnabled = true
         };
-        static WrapPanel bildGallery = new WrapPanel { Orientation = Orientation.Horizontal };
 
         //End of global variables
         public MainWindow()
@@ -110,8 +110,8 @@ namespace Butik_Creator
         {
             // Window options
             Title = "Store Mangement";
-            Width = 1200;
-            Height = 600;
+            Width = 1100;
+            Height = 500;
             WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
             // Scrolling
@@ -184,13 +184,11 @@ namespace Butik_Creator
             // Nested grid for the part Assortment
             Grid assortmentGrid = new Grid
             {
-                Margin = new Thickness(5)
+                Margin = new Thickness(5, 5, 50, 5)
             };
             assortmentGrid.RowDefinitions.Add(new RowDefinition());
             assortmentGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-            assortmentGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-            assortmentGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-            assortmentGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+            assortmentGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(2, GridUnitType.Star) });
             assortmentGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(3, GridUnitType.Star) });
 
 
@@ -212,32 +210,15 @@ namespace Butik_Creator
             Grid.SetRow(assortRemoveAll, 1);
             assortRemoveAll.Click += RemoveAll;
 
-            Label galleryLabel = new Label
-            {
-                Content = "Image Gallery",
-                FontSize = 15,
-                Margin = new Thickness(5),
-                HorizontalContentAlignment = HorizontalAlignment.Center
-            };
-            assortmentGrid.Children.Add(galleryLabel);
-            Grid.SetColumn(galleryLabel, 0);
-            Grid.SetRow(galleryLabel, 2);
-            Grid.SetColumnSpan(galleryLabel, 2);
-
-            assortmentGrid.Children.Add(bildGallery);
-            Grid.SetColumn(bildGallery, 0);
-            Grid.SetRow(bildGallery, 3);
-            Grid.SetColumnSpan(bildGallery, 2);
-
             Grid nestedGrid = new Grid
             {
                 Margin = new Thickness(5)
             };
 
-            nestedGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
             nestedGrid.ColumnDefinitions.Add(new ColumnDefinition());
             nestedGrid.ColumnDefinitions.Add(new ColumnDefinition());
             nestedGrid.ColumnDefinitions.Add(new ColumnDefinition());
+            nestedGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
             nestedGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
             nestedGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
             nestedGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
@@ -259,14 +240,13 @@ namespace Butik_Creator
 
             Label selectImageLabel = new Label
             {
-                Content = "Select image",
-                Margin = new Thickness(10),
-                HorizontalContentAlignment = HorizontalAlignment.Center
+                Content = "Image",
+                Margin = new Thickness(5),
+                HorizontalContentAlignment = HorizontalAlignment.Right
             };
             nestedGrid.Children.Add(selectImageLabel);
-            Grid.SetColumn(selectImageLabel, 3);
-            Grid.SetRow(selectImageLabel, 0);
-            Grid.SetRowSpan(selectImageLabel, 3);
+            Grid.SetColumn(selectImageLabel, 0);
+            Grid.SetRow(selectImageLabel, 3);
 
             nestedGrid.Children.Add(nameTextBox);
             Grid.SetColumn(nameTextBox, 1);
@@ -298,33 +278,30 @@ namespace Butik_Creator
             Grid.SetColumn(priceLabel, 0);
             Grid.SetRow(priceLabel, 2);
 
-
             nestedGrid.Children.Add(priceTextBox);
             Grid.SetColumn(priceTextBox, 1);
             Grid.SetRow(priceTextBox, 2);
             Grid.SetColumnSpan(priceTextBox, 2);
 
-
             RenderOptions.SetBitmapScalingMode(imageBox, BitmapScalingMode.HighQuality);
             nestedGrid.Children.Add(imageBox);
-            Grid.SetColumn(imageBox, 3);
-            Grid.SetRow(imageBox, 0);
-            Grid.SetRowSpan(imageBox, 3);
+            Grid.SetColumn(imageBox, 1);
+            Grid.SetRow(imageBox, 3);
+            Grid.SetColumnSpan(imageBox, 2);
 
-            AddImages(Directory.GetCurrentDirectory()); // Gets images from current project folder and and adds them
+            AddImages(Directory.GetCurrentDirectory(), imageList); // Gets images from current project folder and and adds them
 
-            Grid.SetRow(assortSaveChangesButton, 3);
+            Grid.SetRow(assortSaveChangesButton, 4);
             Grid.SetColumn(assortSaveChangesButton, 1);
             nestedGrid.Children.Add(assortSaveChangesButton);
             assortSaveChangesButton.Click += AssortSaveChanges;
 
-
-            Grid.SetRow(assortRemoveButton, 3);
+            Grid.SetRow(assortRemoveButton, 4);
             Grid.SetColumn(assortRemoveButton, 2);
             nestedGrid.Children.Add(assortRemoveButton);
             assortRemoveButton.Click += AssortRemove;
 
-            Grid.SetRow(assortAddButton, 4);
+            Grid.SetRow(assortAddButton, 5);
             Grid.SetColumn(assortAddButton, 1);
             nestedGrid.Children.Add(assortAddButton);
             Grid.SetColumnSpan(assortAddButton, 2);
@@ -333,12 +310,12 @@ namespace Butik_Creator
             Button assortSaveButton = new Button
             {
                 Content = "Save to file",
-                Margin = new Thickness(90, 5, 150, 5),
+                Margin = new Thickness(5),
                 FontSize = 12,
                 Padding = new Thickness(5),
             };
             Grid.SetRow(assortSaveButton, 1);
-            Grid.SetColumn(assortSaveButton, 2);
+            Grid.SetColumn(assortSaveButton, 1);
             assortmentGrid.Children.Add(assortSaveButton);
             assortSaveButton.Click += SaveAssortment;
 
@@ -353,6 +330,7 @@ namespace Butik_Creator
             {
                 Margin = new Thickness(5)
             };
+
             discountGrid.ColumnDefinitions.Add(new ColumnDefinition());
             discountGrid.ColumnDefinitions.Add(new ColumnDefinition());
             discountGrid.RowDefinitions.Add(new RowDefinition());
@@ -361,7 +339,8 @@ namespace Butik_Creator
             discountListBox = new ListBox
             {
                 Margin = new Thickness(5),
-                MaxHeight = 500,
+                Height = 300,
+                VerticalAlignment = VerticalAlignment.Top
             };
             discountGrid.Children.Add(discountListBox);
             Grid.SetColumn(discountListBox, 0);
@@ -537,10 +516,9 @@ namespace Butik_Creator
         }
 
         //Save changes to the selected code
-
         private void SaveChangesButton_Click(object sender, RoutedEventArgs e) //Saves the changes by replacing the previous entry at the specified index with the new entry.
-            //Checks if there are duplicates by creating a temporary list and first removing the selected item and then compares the temp list with the new item.
-            
+                                                                               //Checks if there are duplicates by creating a temporary list and first removing the selected item and then compares the temp list with the new item.
+
         {
             int indexSelected = discountListBox.SelectedIndex;
 
@@ -580,7 +558,7 @@ namespace Butik_Creator
             }
         }
 
-        public static bool AssortIsDuplicate(string name, List<Store> list) //Check the list to find entries with the same name
+        public static bool AssortIsDuplicate(string name, List<Store> list)  //Check the list to find entries with the same name
         {
             var duplication = list.Where(l => l.Name == name);
             return duplication.Any();
@@ -598,7 +576,7 @@ namespace Butik_Creator
                 p.ImageName = item[3].Trim();
 
                 list.Add(new Store
-                { Name = p.Name, Price = p.Price, Description = p.Description, ImageName = p.ImageName }); //Add to storelist
+                { Name = p.Name, Price = p.Price, Description = p.Description, ImageName = p.ImageName });  //Add to storelist
                 assortShow?.Add($"{p.Name} {p.Price}kr"); //Add to string list
                 comparer.Add(p.Name.ToLower()); //Add to comparer list
                 assortItemsSave.Add($"{p.Name},{p.Price},{p.Description},{p.ImageName}"); //Add to the assortItemsSave list
@@ -692,7 +670,7 @@ namespace Butik_Creator
                     Name = nameTextBox.Text,
                     Price = Math.Round(decimal.Parse(priceTextBox.Text), 2),
                     Description = descriptionTextBox.Text,
-                    ImageName = imageBox.SelectionBoxItem.ToString()
+                    ImageName = ((Image)imageBox.SelectedItem).Tag.ToString()
                 };
 
                 for (int i = 0; i < assortmentListBox.Items.Count; i++) //Check if the item exists in the comparer list
@@ -748,7 +726,7 @@ namespace Butik_Creator
                 nameTextBox.Text = storeList[assortmentListBox.SelectedIndex].Name;
                 priceTextBox.Text = storeList[assortmentListBox.SelectedIndex].Price.ToString();
                 descriptionTextBox.Text = storeList[assortmentListBox.SelectedIndex].Description;
-                imageBox.Text = storeList[assortmentListBox.SelectedIndex].ImageName;
+                imageBox.SelectedIndex = imageList.IndexOf(storeList[assortmentListBox.SelectedIndex].ImageName);
                 assortSaveChangesButton.IsEnabled = true;
                 assortAddButton.IsEnabled = true;
                 assortRemoveButton.IsEnabled = true;
@@ -770,7 +748,7 @@ namespace Butik_Creator
                 var pricee = decimal.Parse(priceTextBox.Text);
                 var price = Math.Round(pricee, 2);
                 var description = descriptionTextBox.Text;
-                var imageName = imageBox.Text;
+                var imageName = ((Image)imageBox.SelectedItem).Tag.ToString();
 
                 List<Store> copyStoreList = storeList.Select(l => l).ToList();
                 copyStoreList.RemoveAt(indexSelected);
@@ -830,11 +808,10 @@ namespace Butik_Creator
             storeList.RemoveAt(indexSelected);
             imageBox.SelectedIndex = -1;
         }
-        public static bool AddImages(string dir) //Adds images from the current project image folder
+        public static bool AddImages(string dir, List<string> imageList) //Adds images from the current project image folder
         {
             //dir = Directory.GetCurrentDirectory();
-            foreach (var item in Directory.GetFiles($@"{dir}\Images")
-            ) //Gets all files in the image folder and then extracts the image filename
+            foreach (var item in Directory.GetFiles($@"{dir}\Images")) //Gets all files in the image folder and then extracts the image filename
             {
                 if (item.Length == 0)
                 {
@@ -842,29 +819,20 @@ namespace Butik_Creator
                 }
                 string[] arr = item.Split('\\');
                 var lastItem = arr.Last();
-                imageBox.Items.Add(lastItem);
 
                 Image testImage = new Image //Adds an image per file in the image folder
                 {
                     Source = new BitmapImage(new Uri(@$"Images\{lastItem}", UriKind.Relative)),
                     HorizontalAlignment = HorizontalAlignment.Center,
                     VerticalAlignment = VerticalAlignment.Center,
-                    Margin = new Thickness(5),
-                    Width = 80,
-                    Height = 80,
-                    Stretch = Stretch.Uniform
+                    Width = 100,
+                    Height = 100,
+                    Stretch = Stretch.Uniform,
+                    Tag = lastItem
                 };
+                imageList.Add(lastItem);
                 RenderOptions.SetBitmapScalingMode(testImage, BitmapScalingMode.HighQuality);
-                bildGallery.Children.Add(testImage);
-
-                Label imageLabel = new Label //To describe the filenames of the images
-                {
-                    Content = lastItem,
-                    Margin = new Thickness(5),
-                    HorizontalContentAlignment = HorizontalAlignment.Center
-
-                };
-                bildGallery.Children.Add(imageLabel);
+                imageBox.Items.Add(testImage);
             }
             return true;
         }

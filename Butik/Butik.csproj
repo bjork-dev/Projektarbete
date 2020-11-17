@@ -12,7 +12,6 @@
 	</ItemGroup>
 	<ItemGroup>
 	  <None Remove="Coupon.csv" />
-	  <None Remove="Images\siberia.png" />
 	  <None Remove="store.csv" />
 	</ItemGroup>
 	<ItemGroup>

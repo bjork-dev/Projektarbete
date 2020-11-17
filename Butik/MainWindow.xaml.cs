@@ -72,7 +72,7 @@ namespace Butik
             get => price;
             set
             {
-                if (value < 0 || value == 0)
+                if (value <= 0)
                 {
                     throw new Exception("Price cannot be 0 or less");
                 }
@@ -118,7 +118,7 @@ namespace Butik
         private const string Path = @"C:\Windows\Temp\store.csv";
         public const string CouponLocalPath = "Coupon.csv";
         public const string CouponGlobalPath = @"C:\Windows\Temp\" + CouponLocalPath;
-        private readonly ListBox CartBody = new ListBox { Margin = new Thickness(5), MaxHeight = 335 };
+        private readonly ListBox CartBody = new ListBox { Margin = new Thickness(5), MaxHeight = 335, MinHeight = 100 };
         internal decimal sumTotal;
         internal decimal sumWithoutDiscount;
         private List<string> savedItemsList = new List<string>(); //Stores the cart items
@@ -163,7 +163,7 @@ namespace Butik
             grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
             grid.RowDefinitions.Add(new RowDefinition());
 
-            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(2, GridUnitType.Star) });
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(3, GridUnitType.Star) });
             grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
 
             //Title text
@@ -214,14 +214,14 @@ namespace Butik
             LoadDiscounts(discountsList, CouponGlobalPath); // Load saved discounts   
         }
 
-        private Grid CreateCartPanel() //Right side of the application
+        private Grid CreateCartPanel()  //Right side of the application
         {
             // Nested grid for the part Cart
             Grid cartGrid = new Grid
             {
                 Margin = new Thickness(5)
             };
-            cartGrid.RowDefinitions.Add(new RowDefinition());
+            cartGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
             cartGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
             cartGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
             cartGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
@@ -358,6 +358,16 @@ namespace Butik
             {
                 try
                 {
+                    // for each product creates nested grid with image, name, description and button "buy (price)"  
+                    Grid itemGrid = new Grid
+                    {
+                        Margin = new Thickness(5, 25, 5, 25)
+                    };
+                    itemGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+                    itemGrid.RowDefinitions.Add(new RowDefinition());
+                    itemGrid.RowDefinitions.Add(new RowDefinition());
+                    itemGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+
                     p.Name = item[0]; //Assign each delimted item to an attribute
                     p.Price = decimal.Parse(item[1]);
                     p.Description = item[2];
@@ -378,30 +388,50 @@ namespace Butik
                     };
 
                     RenderOptions.SetBitmapScalingMode(image, BitmapScalingMode.HighQuality);
-                    wrapPanel.Children.Add(image);
-                    //Product title
+                    itemGrid.Children.Add(image);
+                    Grid.SetRow(image, 0);
 
-                    Label titleLabel = new Label //Create a title label from the store item's name
+                    TextBlock titleTextBlock = new TextBlock  //Create a title textBox from the store item's name
                     {
-                        Content = p.Name + "\n\n" + p.Description.Trim(' '),
+                        Text = p.Name,
                         Margin = new Thickness(5),
-                        FontFamily = new FontFamily("Constantia"),
                         FontSize = 18,
-                        HorizontalContentAlignment = HorizontalAlignment.Left
+                        Width = 150,
+                        TextWrapping = TextWrapping.Wrap,
+                        TextAlignment = TextAlignment.Center,
+
                     };
-                    wrapPanel.Children.Add(titleLabel);
+                    itemGrid.Children.Add(titleTextBlock);
+                    Grid.SetRow(titleTextBlock, 1);
+
+                    TextBlock descriptionTextBlock = new TextBlock
+                    {
+                        Text = p.Description.Trim(' '),
+                        Margin = new Thickness(5),
+                        FontSize = 14,
+                        Width = 150,
+                        TextAlignment = TextAlignment.Center,
+                        TextWrapping = TextWrapping.Wrap,
+                    };
+
+                    itemGrid.Children.Add(descriptionTextBlock);
+                    Grid.SetRow(descriptionTextBlock, 2);
+
                     var button = new Button //The buy button, fetches price attribute from store item
                     {
                         Content = $"Buy ({p.Price}kr)",
-                        HorizontalAlignment = HorizontalAlignment.Left,
-                        Width = 75,
-                        Height = 30,
+                        HorizontalAlignment = HorizontalAlignment.Center,
+                        Width = 100,
+                        Height = 40,
                         Tag = p.Name,
                         DataContext = p.Price,
-                        VerticalAlignment = VerticalAlignment.Bottom,
+                        VerticalAlignment = VerticalAlignment.Center,
                     };
+                    itemGrid.Children.Add(button);
+                    Grid.SetRow(button, 3);
                     button.Click += AddToCartOnClick;
-                    wrapPanel.Children.Add(button);
+
+                    wrapPanel.Children.Add(itemGrid);
 
                 }
                 catch (Exception)
@@ -463,7 +493,6 @@ namespace Butik
             sumWithoutDiscount += (decimal)button.DataContext;
             totalPrice.Text = ShowTotalPrice();
         }
-
         // Adds item to reciept and displays it to the user, then clears the lists that previously contained the cart items and resets the total sum and discount.
         private void CheckoutOnClick(object sender, RoutedEventArgs e)
         {
@@ -489,7 +518,7 @@ namespace Butik
             }
         }
 
-        private void RemoveAllCartOnClick(object sender, RoutedEventArgs e)
+        private void RemoveAllCartOnClick(object sender, RoutedEventArgs e) //Gets the selected index in the listbox and then removes the item connected.
         {
             const string message = "Would you like to remove all items from the cart?";
             var result = MessageBox.Show(message, "Remove all", MessageBoxButton.YesNo);
@@ -504,7 +533,7 @@ namespace Butik
             savedItemsList.Clear();
         }
 
-        private void RemoveFromCartOnClick(object sender, RoutedEventArgs e) //Gets the selected index in the listbox and then removes the item connected.
+        private void RemoveFromCartOnClick(object sender, RoutedEventArgs e)
         {
             int indexToRemove = CartBody.SelectedIndex;
             if (indexToRemove == -1)

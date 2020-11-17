@@ -7,12 +7,43 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Images\lundgrens.jpg" />
-    <None Remove="Images\siberia.png" />
+    <None Remove="Images\jakobssons-glogg-kanel.jpg" />
+    <None Remove="Images\kapten-vit-mini-lingon.jpg" />
+    <None Remove="Images\lundgrens-vastkusten.jpg" />
+    <None Remove="Images\lyft-royal-purple-mini-all-white-portion.jpg" />
+    <None Remove="Images\nordic-spirit-strawberry-slim.jpg" />
+    <None Remove="Images\one-bla-portion.jpg" />
+    <None Remove="Images\one-gul-portion.jpg" />
+    <None Remove="Images\snow-white-chew-green-breeze.jpg" />
+    <None Remove="Images\tor-extra-stark-white-portion.jpg" />
+    <None Remove="Images\xr-goteborgs-rape-sparkling-slim-white-portionssnus.jpg" />
+    <None Remove="Images\zyn-mini-dry-citrus-strong.jpg" />
+    <None Remove="Images\zyn-slim-spearmint-strong.jpg" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Images\jakobssons-glogg-kanel.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\kapten-vit-mini-lingon.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\lundgrens-vastkusten.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Images\lundgrens.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\lyft-royal-purple-mini-all-white-portion.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\nordic-spirit-strawberry-slim.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\one-bla-portion.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\one-gul-portion.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Images\siberia.png">
@@ -29,6 +60,21 @@
   <ItemGroup>
     <Content Include="..\Butik\Coupon.csv" Link="Coupon.csv">
     <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\snow-white-chew-green-breeze.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\tor-extra-stark-white-portion.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\xr-goteborgs-rape-sparkling-slim-white-portionssnus.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\zyn-mini-dry-citrus-strong.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\zyn-slim-spearmint-strong.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
 

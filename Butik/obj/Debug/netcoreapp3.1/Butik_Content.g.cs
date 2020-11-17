@@ -8,8 +8,20 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("images/jakobssons-glogg-kanel.jpg")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("images/kapten-vit-mini-lingon.jpg")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("images/lundgrens-vastkusten.jpg")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("images/lundgrens.jpg")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("images/lyft-royal-purple-mini-all-white-portion.jpg")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("images/nordic-spirit-strawberry-slim.jpg")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("images/one-bla-portion.jpg")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("images/one-gul-portion.jpg")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("images/siberia.png")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("images/snow-white-chew-green-breeze.jpg")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("images/tor-extra-stark-white-portion.jpg")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("images/xr-goteborgs-rape-sparkling-slim-white-portionssnus.jpg")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("images/zyn-mini-dry-citrus-strong.jpg")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("images/zyn-slim-spearmint-strong.jpg")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("coupon.csv")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("store.csv")]
 
