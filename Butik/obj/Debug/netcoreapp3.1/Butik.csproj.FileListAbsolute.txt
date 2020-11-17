@@ -210,3 +210,15 @@ C:\Users\empir\Source\Repos\Projektarbete100\Butik\obj\Debug\netcoreapp3.1\Butik
 C:\Users\empir\Source\Repos\Projektarbete100\Butik\obj\Debug\netcoreapp3.1\Butik.dll
 C:\Users\empir\Source\Repos\Projektarbete100\Butik\obj\Debug\netcoreapp3.1\Butik.pdb
 C:\Users\empir\Source\Repos\Projektarbete100\Butik\obj\Debug\netcoreapp3.1\Butik.genruntimeconfig.cache
+C:\Users\ersve\Documents\GitHub\Projektarbete\Butik\bin\Debug\netcoreapp3.1\Images\jakobssons-glogg-kanel.jpg
+C:\Users\ersve\Documents\GitHub\Projektarbete\Butik\bin\Debug\netcoreapp3.1\Images\kapten-vit-mini-lingon.jpg
+C:\Users\ersve\Documents\GitHub\Projektarbete\Butik\bin\Debug\netcoreapp3.1\Images\lundgrens-vastkusten.jpg
+C:\Users\ersve\Documents\GitHub\Projektarbete\Butik\bin\Debug\netcoreapp3.1\Images\lyft-royal-purple-mini-all-white-portion.jpg
+C:\Users\ersve\Documents\GitHub\Projektarbete\Butik\bin\Debug\netcoreapp3.1\Images\nordic-spirit-strawberry-slim.jpg
+C:\Users\ersve\Documents\GitHub\Projektarbete\Butik\bin\Debug\netcoreapp3.1\Images\one-bla-portion.jpg
+C:\Users\ersve\Documents\GitHub\Projektarbete\Butik\bin\Debug\netcoreapp3.1\Images\one-gul-portion.jpg
+C:\Users\ersve\Documents\GitHub\Projektarbete\Butik\bin\Debug\netcoreapp3.1\Images\snow-white-chew-green-breeze.jpg
+C:\Users\ersve\Documents\GitHub\Projektarbete\Butik\bin\Debug\netcoreapp3.1\Images\tor-extra-stark-white-portion.jpg
+C:\Users\ersve\Documents\GitHub\Projektarbete\Butik\bin\Debug\netcoreapp3.1\Images\xr-goteborgs-rape-sparkling-slim-white-portionssnus.jpg
+C:\Users\ersve\Documents\GitHub\Projektarbete\Butik\bin\Debug\netcoreapp3.1\Images\zyn-mini-dry-citrus-strong.jpg
+C:\Users\ersve\Documents\GitHub\Projektarbete\Butik\bin\Debug\netcoreapp3.1\Images\zyn-slim-spearmint-strong.jpg
